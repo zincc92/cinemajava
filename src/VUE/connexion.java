@@ -23,8 +23,14 @@ public class connexion {
         frame.setResizable(false); // Verrouille la taille de la fenêtre
         centerFrameOnScreen(frame); // Centrer la fenêtre sur l'écran
 
+        // Chargement de l'icône depuis le chemin relatif
+        ImageIcon icon = new ImageIcon(getClass().getResource("/IMAGES/logo.png"));
+        frame.setIconImage(icon.getImage());
+
         panel = new JPanel();
         panel.setLayout(new GridBagLayout()); // Utilisation d'un GridBagLayout
+
+
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5); // Marge entre les composants
