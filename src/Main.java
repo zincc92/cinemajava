@@ -31,6 +31,7 @@ public class Main {
                 System.out.println("Nouvelle instance");
                 new connexion();
                 new inscription();
+                new accueil();
             }
         });
     }

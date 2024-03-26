@@ -24,14 +24,13 @@
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files>
-      <object connection-id="3beaae6f-ee30-4ba0-93a7-63392a8d963b" object-ref="schemas/projetcinema/tables/clients" />
-    </open-files>
+    <open-files />
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="3beaae6f-ee30-4ba0-93a7-63392a8d963b" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="3beaae6f-ee30-4ba0-93a7-63392a8d963b" dataset="cinemaprojet.films" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="3beaae6f-ee30-4ba0-93a7-63392a8d963b" dataset="projetcinema.clients" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.ObjectQuickFilterManager">
