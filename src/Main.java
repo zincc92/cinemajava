@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import VUE.connexion;
+import VUE.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -30,6 +30,7 @@ public class Main {
             public void run() {
                 System.out.println("Nouvelle instance");
                 new connexion();
+                new inscription();
             }
         });
     }
