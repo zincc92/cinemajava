@@ -15,7 +15,7 @@ public class accueil {
     }
 
     private void initializeAccueilView() {
-        frame = new JFrame("Accueil");
+        frame = new JFrame("CinemaAPP");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 400); // Dimension personnalisée de la fenêtre
         frame.setResizable(false); // Verrouille la taille de la fenêtre
@@ -28,6 +28,17 @@ public class accueil {
         panel = new JPanel();
         panel.setLayout(new BorderLayout());
 
+        // Création du menu
+        JMenuBar menuBar = new JMenuBar();
+        JMenu accueilMenu = new JMenu("Accueil");
+        JMenu diffusionsMenu = new JMenu("Diffusions");
+        JMenu connexionMenu = new JMenu("Connexion");
+        menuBar.add(accueilMenu);
+        menuBar.add(diffusionsMenu);
+        menuBar.add(Box.createHorizontalGlue()); // Ajout d'un espace flexible
+        menuBar.add(connexionMenu);
+        frame.setJMenuBar(menuBar);
+
         // Chargement de l'image et redimensionnement
         ImageIcon originalImageIcon = new ImageIcon(getClass().getResource("/IMAGES/acceuiltop.png"));
         Image originalImage = originalImageIcon.getImage();
@@ -38,12 +49,12 @@ public class accueil {
         panel.add(imageLabel, BorderLayout.NORTH);
 
         // Ajout de la section de bienvenue
-        welcomeLabel = new JLabel("Bienvenue sur notre application! Consultez les diffusions de films, réserver vos scéances !");
+        welcomeLabel = new JLabel("Bienvenue sur notre application! Consultez les diffusions de films, réservez vos séances !");
         welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(welcomeLabel, BorderLayout.CENTER);
 
         // Ajout du footer
-        footerLabel = new JLabel("© 2024 CinemaAPP tout droits réservés");
+        footerLabel = new JLabel("© 2024 CinemaAPP tous droits réservés");
         footerLabel.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(footerLabel, BorderLayout.SOUTH);
 

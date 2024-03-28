@@ -32,6 +32,7 @@ public class Main {
                 new connexion();
                 new inscription();
                 new accueil();
+                new paiement();
             }
         });
     }
