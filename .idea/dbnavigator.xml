@@ -6,7 +6,11 @@
   </component>
   <component name="DBNavigator.Project.DataEditorManager">
     <record-view-column-sorting-type value="BY_INDEX" />
+<<<<<<< HEAD
     <value-preview-text-wrapping value="true" />
+=======
+    <value-preview-text-wrapping value="false" />
+>>>>>>> main
     <value-preview-pinned value="false" />
   </component>
   <component name="DBNavigator.Project.DatabaseBrowserManager">
@@ -30,6 +34,10 @@
     <connection id="3beaae6f-ee30-4ba0-93a7-63392a8d963b" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
+<<<<<<< HEAD
+=======
+    <filter-actions connection-id="3beaae6f-ee30-4ba0-93a7-63392a8d963b" dataset="cinemaprojet.films" active-filter-id="EMPTY_FILTER" />
+>>>>>>> main
     <filter-actions connection-id="3beaae6f-ee30-4ba0-93a7-63392a8d963b" dataset="projetcinema.clients" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.ObjectQuickFilterManager">
