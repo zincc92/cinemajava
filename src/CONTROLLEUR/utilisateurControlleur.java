@@ -9,7 +9,7 @@ import java.util.UUID;
 import MODELE.*;
 
 public class utilisateurControlleur {
-    private Connection connexion; // Modifier le type de connexion
+    private static Connection connexion; // Modifier le type de connexion
 
     public utilisateurControlleur(Connection connexion) {
         this.connexion = connexion;
@@ -23,7 +23,7 @@ public class utilisateurControlleur {
     public static boolean inscrireUtilisateur(utilisateur User) {
         String query = "INSERT INTO clients (type, nom, email, mdp) VALUES (?, ?, ?, ?)";
         try {
-            PreparedStatement statement = MODELE.connexion.prepareStatement(query);
+            PreparedStatement statement = connexion.prepareStatement(query);
             statement.setString(1,User.getType());
             statement.setString(2, User.getNom());
             statement.setString(3, User.getEmail());
