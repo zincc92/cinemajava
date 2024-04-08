@@ -1,20 +1,17 @@
+import VUE.Accueil;
+import VUE.barreDeTache;
+
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import VUE.*;
-
 public class Main {
     public static void main(String[] args) {
         // Informations de connexion à la base de données
-        String url = "jdbc:mysql://localhost:3306/projetcinema";
+        String url = "jdbc:mysql://localhost:8889/cinemaprojet";
         String utilisateur = "root"; // Remplacez par votre nom d'utilisateur MySQL
-        String motDePasse = ""; // Remplacez par votre mot de passe MySQL
+        String motDePasse = "root"; // Remplacez par votre mot de passe MySQL
 
         // Connexion à la base de données
         try {
@@ -26,15 +23,22 @@ public class Main {
         } catch (SQLException e) {
             System.out.println("Erreur lors de la connexion à la base de données : " + e.getMessage());
         }
+
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                System.out.println("Nouvelle instance");
-                new connexion();
-                new inscription();
-                new accueil();
-                new paiement();
+                JFrame frame = new JFrame("CinemaAPP");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setSize(1366, 768);
+                frame.setResizable(false);
+
+                barreDeTache menuBar = new barreDeTache(frame);
+                frame.setJMenuBar(menuBar);
+
+                //Accueil accueil = new Accueil();
+                //frame.add(accueil);
+
+                frame.setVisible(true);
             }
         });
     }
 }
-
