@@ -4,17 +4,28 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import javax.swing.*;
+
+import CONTROLLEUR.*;
+import MODELE.*;
+
 
 public class connexion {
+    private final utilisateurControlleur user;
+    private final Connection connexion;
     private JFrame frame;
     private JPanel panel;
     private JTextField emailField;
     private JPasswordField passwordField;
     private JButton loginButton;
 
-    public connexion() {
+    public connexion(utilisateurControlleur user, Connection connexion) {
+        this.user = user;
+        this.connexion = connexion; // Initialisez la connexion
         initializeConnexionView();
     }
+
 
     private void initializeConnexionView() {
         frame = new JFrame("Connexion");
@@ -29,7 +40,6 @@ public class connexion {
 
         panel = new JPanel();
         panel.setLayout(new GridBagLayout()); // Utilisation d'un GridBagLayout
-
 
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -66,9 +76,31 @@ public class connexion {
         gbc.anchor = GridBagConstraints.CENTER; // Centrer le bouton
         panel.add(loginButton, gbc);
 
+        loginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String email = emailField.getText();
+                String password = new String(passwordField.getPassword());
+                utilisateurControlleur controller = new utilisateurControlleur(connexion);
+                MODELE.connexion session = controller.creerSession(email, password);
+                if (session != null) {
+                    // Passer la connexion au contrôleur utilisateur si la connexion réussit
+                    controller.setConnexion(connexion);
+                    JOptionPane.showMessageDialog(frame, "Connexion réussie!");
+                    // Afficher le nom de l'utilisateur dans la console
+                    System.out.println("Utilisateur connecté : " + session.getUser().getNom());
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Email ou mot de passe incorrect!");
+                }
+            }
+        });
+
         frame.getContentPane().add(panel);
         frame.setVisible(true);
+
     }
+
+
 
     // Méthode pour centrer la fenêtre sur l'écran
     private void centerFrameOnScreen(JFrame frame) {

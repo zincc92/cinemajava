@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import CONTROLLEUR.*;
+import MODELE.*;
+
 
 public class inscription {
     private JFrame frame;
@@ -12,10 +15,14 @@ public class inscription {
     private JTextField emailField;
     private JPasswordField passwordField;
     private JButton inscriptionButton;
+    private utilisateurControlleur user;
 
-    public inscription() {
+    public inscription(utilisateurControlleur user) {
+        this.user = user;
         initializeInscriptionView();
     }
+
+
 
     private void initializeInscriptionView() {
         frame = new JFrame("Inscription");
@@ -79,6 +86,23 @@ public class inscription {
 
         frame.getContentPane().add(panel);
         frame.setVisible(true);
+
+        inscriptionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nom = nomField.getText();
+                String email = emailField.getText();
+                String type = "1";
+                String motDePasse = new String(passwordField.getPassword());
+                utilisateur user= new utilisateur(type, nom, email, motDePasse);
+                boolean inscriptionReussie = utilisateurControlleur.inscrireUtilisateur(user);
+                if (inscriptionReussie) {
+                    JOptionPane.showMessageDialog(frame, "Inscription réussie !");
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Erreur lors de l'inscription !");
+                }
+            }
+        });
     }
 
     // Méthode pour centrer la fenêtre sur l'écran
