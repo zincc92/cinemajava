@@ -7,30 +7,19 @@ import java.awt.event.ActionListener;
 
 public class connexion {
     private JFrame frame;
-    private JPanel panel;
-    private JTextField emailField;
-    private JPasswordField passwordField;
-    private JButton loginButton;
+    private static JPanel panel;
+    private static JTextField emailField;
+    private static JPasswordField passwordField;
+    private static JButton loginButton;
 
     public connexion() {
         initializeConnexionView();
     }
 
-    private void initializeConnexionView() {
-        frame = new JFrame("Connexion");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(300, 150); // Dimension personnalisée de la fenêtre
-        frame.setResizable(false); // Verrouille la taille de la fenêtre
-        centerFrameOnScreen(frame); // Centrer la fenêtre sur l'écran
-
-        // Chargement de l'icône depuis le chemin relatif
-        ImageIcon icon = new ImageIcon(getClass().getResource("/IMAGES/logo.png"));
-        frame.setIconImage(icon.getImage());
+    public static JPanel initializeConnexionView() {
 
         panel = new JPanel();
         panel.setLayout(new GridBagLayout()); // Utilisation d'un GridBagLayout
-
-
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5); // Marge entre les composants
@@ -59,15 +48,15 @@ public class connexion {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(passwordField, gbc);
 
-        loginButton = new JButton("Connexion");
+        loginButton = new JButton("Connexion2");
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER; // Centrer le bouton
         panel.add(loginButton, gbc);
 
-        frame.getContentPane().add(panel);
-        frame.setVisible(true);
+        return panel; // Retourne le panneau
+
     }
 
     // Méthode pour centrer la fenêtre sur l'écran
@@ -77,4 +66,5 @@ public class connexion {
         int y = (screenSize.height - frame.getHeight()) / 2;
         frame.setLocation(x, y);
     }
+
 }
