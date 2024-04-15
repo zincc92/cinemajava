@@ -18,13 +18,23 @@ public class barreDeTache extends JMenuBar {
         JButton diffusionsMenu = new JButton("Diffusions");
         JButton connexionMenu = new JButton("Connexion");
         JButton inscriptionMenu = new JButton("Inscription");
+        // Si on est connecté :
+        JButton monCompteMenu = new JButton("Mon Compte");
+        JButton deconnexion = new JButton("Deconnexion");
 
         // Ajout des boutons à la barre de menu
         add(accueilMenu);
         add(diffusionsMenu);
         add(Box.createHorizontalGlue()); // Ajout d'un espace flexible
-        add(connexionMenu);
-        add(inscriptionMenu);
+        // Si on est connecté, affiché les bons boutons, sinon les autres
+        if (connexion != null) {
+            add(monCompteMenu);
+            add(deconnexion);
+        }
+        else {
+            add(connexionMenu);
+            add(inscriptionMenu);
+        }
 
         //Lorsque le bouton accueil est sélectionné
         accueilMenu.addActionListener(new ActionListener() {
@@ -65,6 +75,23 @@ public class barreDeTache extends JMenuBar {
                 showInscription(utilisateurControlleur, barreDeTache.this);
             }
         });
+
+        accueilMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Menu Deconnexion sélectionné");
+                // Affichage de l'accueil
+
+            }
+        });
+        accueilMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Menu Mon Compte sélectionné");
+                // Affichage de l'accueil
+                showMonCompte();
+            }
+        });
     }
 
     public void showAccueil() {
@@ -74,6 +101,14 @@ public class barreDeTache extends JMenuBar {
         frame.getContentPane().add(accueilPanel);
         frame.revalidate();
     }
+    public void showMonCompte() {
+        frame.getContentPane().removeAll();
+        compte comptePanel = new compte();
+        comptePanel.initializeCompteView();
+        frame.getContentPane().add(comptePanel);
+        frame.revalidate();
+    }
+
 
     private void showConnexion(utilisateurControlleur utilisateurControlleur, Connection connexion, barreDeTache barreDeTache) {
         frame.getContentPane().removeAll();

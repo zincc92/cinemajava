@@ -21,6 +21,12 @@ public class connexion {
     public connexion(utilisateurControlleur utilisateurControlleur) {
     }
 
+    public void destroySession() {
+        // Vous pouvez simplement réinitialiser les attributs de la session à null ou une valeur par défaut
+        this.token = null;
+        this.user = null;
+        // Vous pouvez également effectuer d'autres opérations nécessaires pour détruire la session, par exemple supprimer les données de session côté serveur
+    }
 
     public String getToken() {
         return token;
