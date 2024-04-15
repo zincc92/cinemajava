@@ -1,5 +1,6 @@
 package VUE;
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -7,34 +8,23 @@ import java.awt.event.ActionListener;
 import CONTROLLEUR.*;
 import MODELE.*;
 
+public class Inscription {
 
-public class inscription {
-    private JFrame frame;
+    private final VUE.barreDeTache barreDeTache;
     private JPanel panel;
+    private JFrame frame;
     private JTextField nomField;
     private JTextField emailField;
     private JPasswordField passwordField;
     private JButton inscriptionButton;
     private utilisateurControlleur user;
 
-    public inscription(utilisateurControlleur user) {
+    public Inscription(utilisateurControlleur user, barreDeTache barreDeTache) {
         this.user = user;
+        this.barreDeTache = barreDeTache;
         initializeInscriptionView();
     }
-
-
-
-    private void initializeInscriptionView() {
-        frame = new JFrame("Inscription");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(300, 200); // Dimension personnalisée de la fenêtre
-        frame.setResizable(false); // Verrouille la taille de la fenêtre
-        centerFrameOnScreen(frame); // Centrer la fenêtre sur l'écran
-
-        // Chargement de l'icône depuis le chemin relatif
-        ImageIcon icon = new ImageIcon(getClass().getResource("/IMAGES/logo.png"));
-        frame.setIconImage(icon.getImage());
-
+    Component initializeInscriptionView() {
         panel = new JPanel();
         panel.setLayout(new GridBagLayout()); // Utilisation d'un GridBagLayout
 
@@ -84,9 +74,6 @@ public class inscription {
         gbc.anchor = GridBagConstraints.CENTER; // Centrer le bouton
         panel.add(inscriptionButton, gbc);
 
-        frame.getContentPane().add(panel);
-        frame.setVisible(true);
-
         inscriptionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -98,18 +85,14 @@ public class inscription {
                 boolean inscriptionReussie = utilisateurControlleur.inscrireUtilisateur(user);
                 if (inscriptionReussie) {
                     JOptionPane.showMessageDialog(frame, "Inscription réussie !");
+                    barreDeTache.showAccueil();
                 } else {
                     JOptionPane.showMessageDialog(frame, "Erreur lors de l'inscription !");
                 }
+
             }
         });
-    }
 
-    // Méthode pour centrer la fenêtre sur l'écran
-    private void centerFrameOnScreen(JFrame frame) {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screenSize.width - frame.getWidth()) / 2;
-        int y = (screenSize.height - frame.getHeight()) / 2;
-        frame.setLocation(x, y);
+        return panel;
     }
 }

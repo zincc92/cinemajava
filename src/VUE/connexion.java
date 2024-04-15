@@ -10,7 +10,6 @@ import javax.swing.*;
 import CONTROLLEUR.*;
 import MODELE.*;
 
-
 public class connexion {
     private final utilisateurControlleur user;
     private final Connection connexion;
@@ -19,28 +18,18 @@ public class connexion {
     private JTextField emailField;
     private JPasswordField passwordField;
     private JButton loginButton;
+    private barreDeTache barreDeTache;
 
-    public connexion(utilisateurControlleur user, Connection connexion) {
+    public connexion(utilisateurControlleur user, Connection connexion, barreDeTache barreDeTache) {
         this.user = user;
         this.connexion = connexion; // Initialisez la connexion
+        this.barreDeTache = barreDeTache;
         initializeConnexionView();
     }
 
-
-    private void initializeConnexionView() {
-        frame = new JFrame("Connexion");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(300, 150); // Dimension personnalisée de la fenêtre
-        frame.setResizable(false); // Verrouille la taille de la fenêtre
-        centerFrameOnScreen(frame); // Centrer la fenêtre sur l'écran
-
-        // Chargement de l'icône depuis le chemin relatif
-        ImageIcon icon = new ImageIcon(getClass().getResource("/IMAGES/logo.png"));
-        frame.setIconImage(icon.getImage());
-
+    Component initializeConnexionView() {
         panel = new JPanel();
         panel.setLayout(new GridBagLayout()); // Utilisation d'un GridBagLayout
-
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5); // Marge entre les composants
@@ -69,12 +58,13 @@ public class connexion {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(passwordField, gbc);
 
-        loginButton = new JButton("Connexion");
+        loginButton = new JButton("Connexion2");
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER; // Centrer le bouton
         panel.add(loginButton, gbc);
+
 
         loginButton.addActionListener(new ActionListener() {
             @Override
@@ -89,18 +79,16 @@ public class connexion {
                     JOptionPane.showMessageDialog(frame, "Connexion réussie!");
                     // Afficher le nom de l'utilisateur dans la console
                     System.out.println("Utilisateur connecté : " + session.getUser().getNom());
+                    // Rediriger vers la page d'accueil
+                    barreDeTache.showAccueil();
+
                 } else {
                     JOptionPane.showMessageDialog(frame, "Email ou mot de passe incorrect!");
                 }
             }
         });
-
-        frame.getContentPane().add(panel);
-        frame.setVisible(true);
-
+        return panel;
     }
-
-
 
     // Méthode pour centrer la fenêtre sur l'écran
     private void centerFrameOnScreen(JFrame frame) {
