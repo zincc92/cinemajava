@@ -10,6 +10,7 @@ import MODELE.*;
 
 public class Inscription {
 
+    private final VUE.barreDeTache barreDeTache;
     private JPanel panel;
     private JFrame frame;
     private JTextField nomField;
@@ -18,11 +19,12 @@ public class Inscription {
     private JButton inscriptionButton;
     private utilisateurControlleur user;
 
-    public Inscription(utilisateurControlleur user) {
+    public Inscription(utilisateurControlleur user, barreDeTache barreDeTache) {
         this.user = user;
+        this.barreDeTache = barreDeTache;
         initializeInscriptionView();
     }
-    public JPanel initializeInscriptionView() {
+    Component initializeInscriptionView() {
         panel = new JPanel();
         panel.setLayout(new GridBagLayout()); // Utilisation d'un GridBagLayout
 
@@ -83,9 +85,11 @@ public class Inscription {
                 boolean inscriptionReussie = utilisateurControlleur.inscrireUtilisateur(user);
                 if (inscriptionReussie) {
                     JOptionPane.showMessageDialog(frame, "Inscription réussie !");
+                    barreDeTache.showAccueil();
                 } else {
                     JOptionPane.showMessageDialog(frame, "Erreur lors de l'inscription !");
                 }
+
             }
         });
 

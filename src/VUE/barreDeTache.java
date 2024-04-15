@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 
-import MODELE.*;
 import CONTROLLEUR.*;
 
 public class barreDeTache extends JMenuBar {
@@ -53,7 +52,7 @@ public class barreDeTache extends JMenuBar {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Test Connexion");
                 // Affichage de la connexion
-                showConnexion(utilisateurControlleur, connexion);
+                showConnexion(utilisateurControlleur, connexion, barreDeTache.this);
             }
         });
 
@@ -63,12 +62,12 @@ public class barreDeTache extends JMenuBar {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Menu Inscription sélectionné");
                 // Affichage de l'inscription
-                showInscription(utilisateurControlleur);
+                showInscription(utilisateurControlleur, barreDeTache.this);
             }
         });
     }
 
-    private void showAccueil() {
+    public void showAccueil() {
         frame.getContentPane().removeAll();
         Accueil accueilPanel = new Accueil();
         accueilPanel.initializeAccueilView();
@@ -76,16 +75,16 @@ public class barreDeTache extends JMenuBar {
         frame.revalidate();
     }
 
-    private void showConnexion(utilisateurControlleur utilisateurControlleur, Connection connexion) {
+    private void showConnexion(utilisateurControlleur utilisateurControlleur, Connection connexion, barreDeTache barreDeTache) {
         frame.getContentPane().removeAll();
-        connexion connexionPanel = new connexion(utilisateurControlleur, connexion);
+        connexion connexionPanel = new connexion(utilisateurControlleur, connexion, barreDeTache);
         frame.getContentPane().add(connexionPanel.initializeConnexionView());
         frame.revalidate();
     }
 
-    private void showInscription(utilisateurControlleur utilisateurControlleur) {
+    private void showInscription(utilisateurControlleur utilisateurControlleur, barreDeTache barreDeTache) {
         frame.getContentPane().removeAll();
-        Inscription inscriptionPanel = new Inscription(utilisateurControlleur);
+        Inscription inscriptionPanel = new Inscription(utilisateurControlleur, barreDeTache);
         frame.getContentPane().add(inscriptionPanel.initializeInscriptionView());
         frame.revalidate();
     }

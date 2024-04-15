@@ -18,10 +18,12 @@ public class connexion {
     private JTextField emailField;
     private JPasswordField passwordField;
     private JButton loginButton;
+    private barreDeTache barreDeTache;
 
-    public connexion(utilisateurControlleur user, Connection connexion) {
+    public connexion(utilisateurControlleur user, Connection connexion, barreDeTache barreDeTache) {
         this.user = user;
         this.connexion = connexion; // Initialisez la connexion
+        this.barreDeTache = barreDeTache;
         initializeConnexionView();
     }
 
@@ -77,6 +79,9 @@ public class connexion {
                     JOptionPane.showMessageDialog(frame, "Connexion réussie!");
                     // Afficher le nom de l'utilisateur dans la console
                     System.out.println("Utilisateur connecté : " + session.getUser().getNom());
+                    // Rediriger vers la page d'accueil
+                    barreDeTache.showAccueil();
+
                 } else {
                     JOptionPane.showMessageDialog(frame, "Email ou mot de passe incorrect!");
                 }
