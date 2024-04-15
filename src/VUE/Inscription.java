@@ -2,20 +2,39 @@ package VUE;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import CONTROLLEUR.*;
+import MODELE.*;
 
-public class Inscription {
 
+public class inscription {
+    private JFrame frame;
     private JPanel panel;
     private JTextField nomField;
     private JTextField emailField;
     private JPasswordField passwordField;
     private JButton inscriptionButton;
+    private utilisateurControlleur user;
 
-    public Inscription() {
+    public inscription(utilisateurControlleur user) {
+        this.user = user;
         initializeInscriptionView();
     }
 
-    public JPanel initializeInscriptionView() {
+
+
+    private void initializeInscriptionView() {
+        frame = new JFrame("Inscription");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(300, 200); // Dimension personnalisée de la fenêtre
+        frame.setResizable(false); // Verrouille la taille de la fenêtre
+        centerFrameOnScreen(frame); // Centrer la fenêtre sur l'écran
+
+        // Chargement de l'icône depuis le chemin relatif
+        ImageIcon icon = new ImageIcon(getClass().getResource("/IMAGES/logo.png"));
+        frame.setIconImage(icon.getImage());
+
         panel = new JPanel();
         panel.setLayout(new GridBagLayout()); // Utilisation d'un GridBagLayout
 
@@ -65,7 +84,32 @@ public class Inscription {
         gbc.anchor = GridBagConstraints.CENTER; // Centrer le bouton
         panel.add(inscriptionButton, gbc);
 
+        frame.getContentPane().add(panel);
+        frame.setVisible(true);
 
-        return panel;
+        inscriptionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nom = nomField.getText();
+                String email = emailField.getText();
+                String type = "1";
+                String motDePasse = new String(passwordField.getPassword());
+                utilisateur user= new utilisateur(type, nom, email, motDePasse);
+                boolean inscriptionReussie = utilisateurControlleur.inscrireUtilisateur(user);
+                if (inscriptionReussie) {
+                    JOptionPane.showMessageDialog(frame, "Inscription réussie !");
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Erreur lors de l'inscription !");
+                }
+            }
+        });
+    }
+
+    // Méthode pour centrer la fenêtre sur l'écran
+    private void centerFrameOnScreen(JFrame frame) {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (screenSize.width - frame.getWidth()) / 2;
+        int y = (screenSize.height - frame.getHeight()) / 2;
+        frame.setLocation(x, y);
     }
 }
