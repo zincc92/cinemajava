@@ -100,4 +100,7 @@ public class diffusions {
         int y = (screenSize.height - frame.getHeight()) / 2;
         frame.setLocation(x, y);
     }
+
+    public void initializediffusionsView() {
+    }
 }
