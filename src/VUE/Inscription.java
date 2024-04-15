@@ -1,20 +1,27 @@
 package VUE;
 
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import CONTROLLEUR.*;
+import MODELE.*;
 
 public class Inscription {
 
     private JPanel panel;
+    private JFrame frame;
     private JTextField nomField;
     private JTextField emailField;
     private JPasswordField passwordField;
     private JButton inscriptionButton;
+    private utilisateurControlleur user;
 
-    public Inscription() {
+    public Inscription(utilisateurControlleur user) {
+        this.user = user;
         initializeInscriptionView();
     }
-
     public JPanel initializeInscriptionView() {
         panel = new JPanel();
         panel.setLayout(new GridBagLayout()); // Utilisation d'un GridBagLayout
@@ -65,6 +72,22 @@ public class Inscription {
         gbc.anchor = GridBagConstraints.CENTER; // Centrer le bouton
         panel.add(inscriptionButton, gbc);
 
+        inscriptionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nom = nomField.getText();
+                String email = emailField.getText();
+                String type = "1";
+                String motDePasse = new String(passwordField.getPassword());
+                utilisateur user= new utilisateur(type, nom, email, motDePasse);
+                boolean inscriptionReussie = utilisateurControlleur.inscrireUtilisateur(user);
+                if (inscriptionReussie) {
+                    JOptionPane.showMessageDialog(frame, "Inscription réussie !");
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Erreur lors de l'inscription !");
+                }
+            }
+        });
 
         return panel;
     }
