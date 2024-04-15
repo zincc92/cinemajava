@@ -2,32 +2,20 @@ package VUE;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class inscription {
-    private JFrame frame;
+public class Inscription {
+
     private JPanel panel;
     private JTextField nomField;
     private JTextField emailField;
     private JPasswordField passwordField;
     private JButton inscriptionButton;
 
-    public inscription() {
+    public Inscription() {
         initializeInscriptionView();
     }
 
-    private void initializeInscriptionView() {
-        frame = new JFrame("Inscription");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(300, 200); // Dimension personnalisée de la fenêtre
-        frame.setResizable(false); // Verrouille la taille de la fenêtre
-        centerFrameOnScreen(frame); // Centrer la fenêtre sur l'écran
-
-        // Chargement de l'icône depuis le chemin relatif
-        ImageIcon icon = new ImageIcon(getClass().getResource("/IMAGES/logo.png"));
-        frame.setIconImage(icon.getImage());
-
+    public JPanel initializeInscriptionView() {
         panel = new JPanel();
         panel.setLayout(new GridBagLayout()); // Utilisation d'un GridBagLayout
 
@@ -77,15 +65,7 @@ public class inscription {
         gbc.anchor = GridBagConstraints.CENTER; // Centrer le bouton
         panel.add(inscriptionButton, gbc);
 
-        frame.getContentPane().add(panel);
-        frame.setVisible(true);
-    }
 
-    // Méthode pour centrer la fenêtre sur l'écran
-    private void centerFrameOnScreen(JFrame frame) {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screenSize.width - frame.getWidth()) / 2;
-        int y = (screenSize.height - frame.getHeight()) / 2;
-        frame.setLocation(x, y);
+        return panel;
     }
 }

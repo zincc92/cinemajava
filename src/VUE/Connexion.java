@@ -5,19 +5,17 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class connexion {
-    private JFrame frame;
-    private static JPanel panel;
-    private static JTextField emailField;
-    private static JPasswordField passwordField;
-    private static JButton loginButton;
+public class Connexion {
+    private JPanel panel;
+    private JTextField emailField;
+    private JPasswordField passwordField;
+    private JButton loginButton;
 
-    public connexion() {
+    public Connexion() {
         initializeConnexionView();
     }
 
-    public static JPanel initializeConnexionView() {
-
+    public JPanel initializeConnexionView() {
         panel = new JPanel();
         panel.setLayout(new GridBagLayout()); // Utilisation d'un GridBagLayout
 
@@ -56,15 +54,5 @@ public class connexion {
         panel.add(loginButton, gbc);
 
         return panel; // Retourne le panneau
-
     }
-
-    // Méthode pour centrer la fenêtre sur l'écran
-    private void centerFrameOnScreen(JFrame frame) {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screenSize.width - frame.getWidth()) / 2;
-        int y = (screenSize.height - frame.getHeight()) / 2;
-        frame.setLocation(x, y);
-    }
-
 }

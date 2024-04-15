@@ -1,5 +1,4 @@
-import VUE.Accueil;
-import VUE.barreDeTache;
+import VUE.*;
 
 import javax.swing.*;
 import java.sql.Connection;
@@ -26,6 +25,7 @@ public class Main {
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                //Création de la fenêtre d'utilisation de l'application
                 JFrame frame = new JFrame("CinemaAPP");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setSize(1366, 768);
