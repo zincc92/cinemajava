@@ -7,11 +7,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import MODELE.connexion;
 import VUE.*;
 import MODELE.*;
 import CONTROLLEUR.*;
-
-import VUE.connexion;
 
 public class Main {
     public static void main(String[] args) {
@@ -36,7 +35,9 @@ public class Main {
                     frame.setSize(1366, 768);
                     frame.setResizable(false);
 
-                    barreDeTache menuBar = new barreDeTache(frame, utilisateurControlleur, connexion);
+
+                    connexion session = new connexion();
+                    barreDeTache menuBar = new barreDeTache(frame, utilisateurControlleur, connexion, session);
                     frame.setJMenuBar(menuBar);
 
                     //Accueil accueil = new Accueil();
@@ -48,6 +49,8 @@ public class Main {
         } catch (SQLException e) {
             System.out.println("Erreur lors de la connexion à la base de données : " + e.getMessage());
         }
+
+
 
     }
 }

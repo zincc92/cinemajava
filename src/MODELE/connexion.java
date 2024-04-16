@@ -8,15 +8,25 @@ public class connexion {
     private String token; // Token unique pour la session
     private utilisateur user; // Utilisateur connecté
 
+    public connexion() {
+        this.token = null;
+        this.user = null;
+    }
+
     public connexion(String token, utilisateur user) {
         this.token = token;
         this.user = user;
     }
 
-    public connexion() {
-        this.token = null;
-        this.user = null;
+    public boolean isUserConnected() {
+        if (token != null && user != null) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
+
 
     public connexion(utilisateurControlleur utilisateurControlleur) {
     }

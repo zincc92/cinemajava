@@ -19,11 +19,13 @@ public class connexion {
     private JPasswordField passwordField;
     private JButton loginButton;
     private barreDeTache barreDeTache;
+    private MODELE.connexion session;
 
-    public connexion(utilisateurControlleur user, Connection connexion, barreDeTache barreDeTache) {
+    public connexion(utilisateurControlleur user, Connection connexion, barreDeTache barreDeTache, MODELE.connexion session) {
         this.user = user;
         this.connexion = connexion; // Initialisez la connexion
         this.barreDeTache = barreDeTache;
+        this.session = session;
         initializeConnexionView();
     }
 
@@ -72,7 +74,7 @@ public class connexion {
                 String email = emailField.getText();
                 String password = new String(passwordField.getPassword());
                 utilisateurControlleur controller = new utilisateurControlleur(connexion);
-                MODELE.connexion session = controller.creerSession(email, password);
+                session = controller.creerSession(email, password);
                 if (session != null) {
                     // Passer la connexion au contrôleur utilisateur si la connexion réussit
                     controller.setConnexion(connexion);
@@ -80,7 +82,9 @@ public class connexion {
                     // Afficher le nom de l'utilisateur dans la console
                     System.out.println("Utilisateur connecté : " + session.getUser().getNom());
                     // Rediriger vers la page d'accueil
+                    barreDeTache.updateButtons(session);
                     barreDeTache.showAccueil();
+
 
                 } else {
                     JOptionPane.showMessageDialog(frame, "Email ou mot de passe incorrect!");
