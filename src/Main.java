@@ -39,9 +39,6 @@ public class Main {
                     barreDeTache menuBar = new barreDeTache(frame, utilisateurControlleur, connexion);
                     frame.setJMenuBar(menuBar);
 
-                    //Accueil accueil = new Accueil();
-                    //frame.add(accueil);
-
                     frame.setVisible(true);
                 }
             });

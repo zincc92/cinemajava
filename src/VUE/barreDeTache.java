@@ -1,6 +1,7 @@
 package VUE;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -18,11 +19,13 @@ public class barreDeTache extends JMenuBar {
         JButton diffusionsMenu = new JButton("Diffusions");
         JButton connexionMenu = new JButton("Connexion");
         JButton inscriptionMenu = new JButton("Inscription");
+        JButton adminMenu = new JButton("Admin");
 
         // Ajout des boutons à la barre de menu
         add(accueilMenu);
         add(diffusionsMenu);
         add(Box.createHorizontalGlue()); // Ajout d'un espace flexible
+        add(adminMenu);
         add(connexionMenu);
         add(inscriptionMenu);
 
@@ -43,6 +46,16 @@ public class barreDeTache extends JMenuBar {
                 System.out.println("Menu Diffusions sélectionné");
                 //Affichage de la diffusion
                 showDiffusions();
+            }
+        });
+
+        //Lorsque le bouton admin est sélectionné
+        adminMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Test bouton Admin");
+                //Appel de l'affichage admin
+                showAdmin(connexion);
             }
         });
 
@@ -93,7 +106,14 @@ public class barreDeTache extends JMenuBar {
         frame.getContentPane().removeAll();
         diffusions diffusionsPanel = new diffusions();
         diffusionsPanel.initializediffusionsView();
-        //frame.getContentPane().add(diffusionsPanel);
+        frame.revalidate();
+    }
+
+    private void showAdmin(Connection connexion){
+        frame.getContentPane().removeAll();
+        admin adminPanel = new admin(connexion);
+        adminPanel.initializeAdminView(connexion);
+        frame.getContentPane().add(adminPanel);
         frame.revalidate();
     }
 }
