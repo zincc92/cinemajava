@@ -71,7 +71,7 @@ public class barreDeTache extends JMenuBar {
 
     public void showAccueil() {
         frame.getContentPane().removeAll();
-        Accueil accueilPanel = new Accueil();
+        accueil accueilPanel = new accueil();
         accueilPanel.initializeAccueilView();
         frame.getContentPane().add(accueilPanel);
         frame.revalidate();
@@ -91,13 +91,6 @@ public class barreDeTache extends JMenuBar {
         frame.revalidate();
     }
 
-    /*private void showDiffusions(){
-        frame.getContentPane().removeAll();
-        diffusions diffusionsPanel = new diffusions();
-        diffusionsPanel.initializediffusionsView();
-        //frame.getContentPane().add(diffusionsPanel);
-        frame.revalidate();
-    }
-    */
+
 
 }

@@ -14,7 +14,7 @@ public class accueil {
         initializeAccueilView();
     }
 
-    private void initializeAccueilView() {
+    public void initializeAccueilView() {
         frame = new JFrame("CinemaAPP");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 400); // Dimension personnalisée de la fenêtre
