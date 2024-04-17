@@ -62,6 +62,8 @@ public class diffusions extends JPanel {
         return films;
     }
 
+
+
     // Classe interne pour représenter un film sous forme de panneau
     public class FilmPanel extends JPanel {
         private Film film;

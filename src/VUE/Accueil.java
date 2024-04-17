@@ -1,8 +1,8 @@
 package VUE;
 
+
 import javax.swing.*;
 import java.awt.*;
-
 public class Accueil extends JPanel {
     private JLabel welcomeLabel;
     private JLabel footerLabel;
