@@ -49,9 +49,6 @@ public class Main {
         } catch (SQLException e) {
             System.out.println("Erreur lors de la connexion à la base de données : " + e.getMessage());
         }
-
-
-
     }
 }
 

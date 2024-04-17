@@ -1,3 +1,5 @@
+package VUE;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -114,4 +116,5 @@ public class compte extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(compte::new);
     }
+
 }

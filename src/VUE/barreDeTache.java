@@ -76,15 +76,7 @@ public class barreDeTache extends JMenuBar {
             }
         });
 
-        accueilMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Menu Deconnexion sélectionné");
-                // Affichage de l'accueil
-
-            }
-        });
-        accueilMenu.addActionListener(new ActionListener() {
+        monCompteMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Menu Mon Compte sélectionné");
@@ -114,7 +106,7 @@ public class barreDeTache extends JMenuBar {
     public void showMonCompte() {
         frame.getContentPane().removeAll();
         compte comptePanel = new compte();
-        comptePanel.initializeCompteView();
+        //comptePanel.initializeCompteView();
         frame.getContentPane().add(comptePanel);
         frame.revalidate();
     }
