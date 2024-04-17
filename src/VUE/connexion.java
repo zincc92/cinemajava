@@ -101,4 +101,23 @@ public class connexion {
         int y = (screenSize.height - frame.getHeight()) / 2;
         frame.setLocation(x, y);
     }
+
+    public void deconnexion() {
+        if (session != null) {
+            session.user = null; // Réinitialiser la session à null
+            session.token = null;
+            System.out.println("Utilisateur déconnecté");
+            barreDeTache.updateButtons(session);
+            barreDeTache.showAccueil();
+            // Supprimer les composants liés à la session précédente
+            panel.removeAll();
+            panel.revalidate();
+            panel.repaint();
+            // Autres actions après la déconnexion, comme afficher l'écran de connexion
+        } else {
+            System.out.println("Aucune session à déconnecter.");
+        }
+    }
+
+
 }

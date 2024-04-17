@@ -18,6 +18,7 @@ public class barreDeTache extends JMenuBar {
     private JButton inscriptionMenu;
     private JButton monCompteMenu;
     private JButton deconnexion;
+    public connexion connexionPanel;
 
     public barreDeTache(JFrame frame, utilisateurControlleur utilisateurControlleur, Connection connexion, MODELE.connexion session) {
         this.frame = frame;
@@ -97,7 +98,7 @@ public class barreDeTache extends JMenuBar {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Déconnexion sélectionné");
                 // Affichage de l'accueil
-                showDeconnexion();
+                showDeconnexion(utilisateurControlleur, connexion, barreDeTache.this, connexionPanel, session);
             }
         });
     }
@@ -108,6 +109,7 @@ public class barreDeTache extends JMenuBar {
         accueilPanel.initializeAccueilView();
         frame.getContentPane().add(accueilPanel);
         frame.revalidate();
+        frame.repaint();
     }
     public void showMonCompte() {
         frame.getContentPane().removeAll();
@@ -120,7 +122,7 @@ public class barreDeTache extends JMenuBar {
 
     private void showConnexion(utilisateurControlleur utilisateurControlleur, Connection connexion, barreDeTache barreDeTache, MODELE.connexion session) {
         frame.getContentPane().removeAll();
-        connexion connexionPanel = new connexion(utilisateurControlleur, connexion, barreDeTache, session);
+        connexionPanel = new connexion(utilisateurControlleur, connexion, barreDeTache, session);
         frame.getContentPane().add(connexionPanel.initializeConnexionView());
         frame.revalidate();
     }
@@ -140,12 +142,12 @@ public class barreDeTache extends JMenuBar {
         frame.revalidate();
     }
 
-    private void showDeconnexion(){
+    private void showDeconnexion(utilisateurControlleur utilisateurControlleur, Connection connexion, barreDeTache barreDeTache, connexion connexionInstance, MODELE.connexion session) {
         frame.getContentPane().removeAll();
-        diffusions diffusionsPanel = new diffusions();
-        diffusionsPanel.initializediffusionsView();
-        //frame.getContentPane().add(diffusionsPanel);
+        connexionInstance.deconnexion();
+        //frame.getContentPane().add(connexionInstance.initializeConnexionView());
         frame.revalidate();
+        frame.repaint();
     }
 
     public void updateButtons(MODELE.connexion session) {
@@ -155,7 +157,7 @@ public class barreDeTache extends JMenuBar {
         add(diffusionsMenu);
         add(Box.createHorizontalGlue()); // Ajout d'un espace flexible
 
-        if (session.getUser() == null) {
+        if (session.user == null) {
             // Ajoutez les boutons de connexion et d'inscription
             add(connexionMenu);
             add(inscriptionMenu);
@@ -166,9 +168,6 @@ public class barreDeTache extends JMenuBar {
             add(deconnexion);
             System.out.println("on est co");
         }
-
-
-
         revalidate(); // Rafraîchissez l'affichage de la barre de tâches
     }
 }

@@ -70,27 +70,5 @@ public class utilisateurControlleur {
             return null;
         }
     }
-    public boolean detruireSession(String token) {
-        // Préparez une requête pour supprimer la session correspondant au token
-        String query = "DELETE FROM sessions WHERE token = ?";
-        try {
-            PreparedStatement statement = connexion.prepareStatement(query);
-            statement.setString(1, token);
-            // Exécutez la requête de suppression
-            int rowsAffected = statement.executeUpdate();
-            // Vérifiez si la session a été supprimée avec succès
-            if (rowsAffected > 0) {
-                System.out.println("Déconnexion !");
-                return true;
-            } else {
-                System.out.println("Aucune session trouvée avec le token spécifié.");
-                return false;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Erreur lors de la destruction de la session : " + e.getMessage());
-            return false;
-        }
-    }
 
 }

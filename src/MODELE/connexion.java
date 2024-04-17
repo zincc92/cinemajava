@@ -5,8 +5,8 @@ import CONTROLLEUR.utilisateurControlleur;
 import java.sql.PreparedStatement;
 
 public class connexion {
-    private String token; // Token unique pour la session
-    private utilisateur user; // Utilisateur connecté
+    public String token; // Token unique pour la session
+    public utilisateur user; // Utilisateur connecté
 
     public connexion() {
         this.token = null;
