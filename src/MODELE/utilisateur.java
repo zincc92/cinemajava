@@ -7,7 +7,7 @@ public class utilisateur {
     private String motDePasse;
 
     public utilisateur(String type, String nom, String email, String motDePasse) {
-        this.type = "1";
+        this.type = type;
         this.nom = nom;
         this.email = email;
         this.motDePasse = motDePasse;

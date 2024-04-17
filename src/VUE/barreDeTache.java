@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.util.Objects;
 
 import CONTROLLEUR.*;
 import MODELE.*;
@@ -18,6 +19,7 @@ public class barreDeTache extends JMenuBar {
     private JButton inscriptionMenu;
     private JButton monCompteMenu;
     private JButton deconnexion;
+    private JButton adminMenu;
     public connexion connexionPanel;
 
     public barreDeTache(JFrame frame, utilisateurControlleur utilisateurControlleur, Connection connexion, MODELE.connexion session) {
@@ -33,6 +35,7 @@ public class barreDeTache extends JMenuBar {
         // Si on est connecté :
         monCompteMenu = new JButton("Mon Compte");
         deconnexion = new JButton("Deconnexion");
+        adminMenu = new JButton("Admin");
 
         updateButtons(session);
 
@@ -154,11 +157,17 @@ public class barreDeTache extends JMenuBar {
             add(connexionMenu);
             add(inscriptionMenu);
             System.out.println("on est deco");
+
         } else {
             // Ajoutez les boutons du compte utilisateur et de déconnexion
             add(monCompteMenu);
             add(deconnexion);
             System.out.println("on est co");
+            System.out.println(session.getUser().getType());
+            System.out.println(session.getUser().getNom());
+            if (Objects.equals(session.getUser().getType(), String.valueOf(2))) {
+                add(adminMenu);
+            }
         }
         revalidate(); // Rafraîchissez l'affichage de la barre de tâches
     }
