@@ -16,7 +16,7 @@ public class admin extends JPanel {
     public void initializeAdminView(Connection connexion) {
         setLayout(new BorderLayout());
 
-        JLabel welcomeLabel = new JLabel("Vous êtes à présents sur la page Administrateur");
+        JLabel welcomeLabel = new JLabel("Vous êtes à présent sur la page Administrateur");
         welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         add(welcomeLabel, BorderLayout.NORTH);
 
@@ -80,7 +80,33 @@ public class admin extends JPanel {
                 // Créer une chaîne de texte avec les informations de l'utilisateur
                 String infoUtilisateur = nomUtilisateur + " | " + email + " | ID: " + idUtilisateur + " | Type: " + typeUtilisateur;
                 JLabel label = new JLabel(infoUtilisateur);
-                userPanel.add(label);
+                JButton modifierButton = new JButton("Modifier");
+                JButton supprimerButton = new JButton("Supprimer");
+
+                // Ajout d'un écouteur d'événements pour le bouton "Modifier"
+                modifierButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Récupérer l'id de l'utilisateur
+                        modifierUtilisateur(connexion, idUtilisateur);
+                    }
+                });
+
+                // Ajout d'un écouteur d'événements pour le bouton "Supprimer"
+                supprimerButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Supprimer l'utilisateur de la base de données et de l'affichage
+                        supprimerUtilisateur(connexion, idUtilisateur);
+                    }
+                });
+
+                // Ajout des boutons au panel avec les informations de l'utilisateur
+                JPanel userPanelWithButtons = new JPanel(new FlowLayout());
+                userPanelWithButtons.add(label);
+                userPanelWithButtons.add(modifierButton);
+                userPanelWithButtons.add(supprimerButton);
+                userPanel.add(userPanelWithButtons);
             }
 
             // Fermer les ressources
@@ -93,6 +119,87 @@ public class admin extends JPanel {
         // Rafraîchir l'affichage du panneau
         userPanel.revalidate();
         userPanel.repaint();
+    }
+
+    private void modifierUtilisateur(Connection connexion, int idUtilisateur) {
+        try {
+            // Récupérer les informations de l'utilisateur à partir de la base de données
+            String query = "SELECT * FROM clients WHERE id=?";
+            PreparedStatement preparedStatement = connexion.prepareStatement(query);
+            preparedStatement.setInt(1, idUtilisateur);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Récupérer les informations de l'utilisateur
+            String nomUtilisateur = "";
+            String email = "";
+            int typeUtilisateur = 0;
+
+            if (resultSet.next()) {
+                nomUtilisateur = resultSet.getString("nom");
+                email = resultSet.getString("email");
+                typeUtilisateur = resultSet.getInt("type");
+            }
+
+            // Créer une boîte de dialogue pour modifier les informations de l'utilisateur
+            JTextField nomField = new JTextField(nomUtilisateur, 20);
+            JTextField emailField = new JTextField(email, 20);
+            JTextField typeField = new JTextField(String.valueOf(typeUtilisateur), 5);
+
+            JPanel panel = new JPanel(new GridLayout(0, 1));
+            panel.add(new JLabel("Nom:"));
+            panel.add(nomField);
+            panel.add(new JLabel("Email:"));
+            panel.add(emailField);
+            panel.add(new JLabel("Type:"));
+            panel.add(typeField);
+
+            int result = JOptionPane.showConfirmDialog(null, panel, "Modifier l'utilisateur",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+            if (result == JOptionPane.OK_OPTION) {
+                // Récupérer les nouvelles valeurs
+                String nouveauNom = nomField.getText();
+                String nouveauEmail = emailField.getText();
+                int nouveauType = Integer.parseInt(typeField.getText());
+
+                // Mettre à jour les informations de l'utilisateur dans la base de données
+                String updateQuery = "UPDATE clients SET nom=?, email=?, type=? WHERE id=?";
+                PreparedStatement updateStatement = connexion.prepareStatement(updateQuery);
+                updateStatement.setString(1, nouveauNom);
+                updateStatement.setString(2, nouveauEmail);
+                updateStatement.setInt(3, nouveauType);
+                updateStatement.setInt(4, idUtilisateur);
+                updateStatement.executeUpdate();
+                updateStatement.close();
+
+                // Rafraîchir l'affichage des utilisateurs
+                afficherUtilisateurs(connexion);
+
+                JOptionPane.showMessageDialog(null, "Les informations de l'utilisateur ont été mises à jour !");
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Erreur lors de la modification de l'utilisateur : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void supprimerUtilisateur(Connection connexion, int idUtilisateur) {
+        try {
+            // Supprimer l'utilisateur de la base de données
+            String deleteQuery = "DELETE FROM clients WHERE id = ?";
+            PreparedStatement preparedStatement = connexion.prepareStatement(deleteQuery);
+            preparedStatement.setInt(1, idUtilisateur);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+
+            // Rafraîchir l'affichage des utilisateurs
+            afficherUtilisateurs(connexion);
+
+            JOptionPane.showMessageDialog(null, "L'utilisateur a été supprimé avec succès !");
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Erreur lors de la suppression de l'utilisateur : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // Méthode pour charger et afficher les films depuis la base de données

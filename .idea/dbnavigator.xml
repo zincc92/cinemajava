@@ -27,10 +27,7 @@
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files>
-      <object connection-id="dffefb92-4bc0-40b1-8465-7b2106a6c734" object-ref="schemas/cinemaprojet/tables/clients" />
-      <object connection-id="dffefb92-4bc0-40b1-8465-7b2106a6c734" object-ref="schemas/cinemaprojet/tables/films" />
-    </open-files>
+    <open-files />
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="3beaae6f-ee30-4ba0-93a7-63392a8d963b" />
