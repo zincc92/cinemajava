@@ -3,17 +3,9 @@ package VUE;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-
-import CONTROLLEUR.*;
 
 public class barreDeTache extends JMenuBar {
-    private JFrame frame;
-
-    public barreDeTache(JFrame frame, utilisateurControlleur utilisateurControlleur, Connection connexion) {
-        this.frame = frame;
-
-        //Création des différents boutons d'utilisation
+    public barreDeTache(JFrame frame) {
         JButton accueilMenu = new JButton("Accueil");
         JButton diffusionsMenu = new JButton("Diffusions");
         JButton connexionMenu = new JButton("Connexion");
@@ -26,13 +18,16 @@ public class barreDeTache extends JMenuBar {
         add(connexionMenu);
         add(inscriptionMenu);
 
-        //Lorsque le bouton accueil est sélectionné
         accueilMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Menu Accueil sélectionné");
                 // Affichage de l'accueil
-                showAccueil();
+                frame.getContentPane().removeAll();
+                accueil accueilPanel = new accueil();
+                accueilPanel.initializeAccueilView();
+                frame.getContentPane().add(accueilPanel);
+                frame.revalidate();
             }
         });
 
@@ -48,49 +43,28 @@ public class barreDeTache extends JMenuBar {
             }
         });
 
-        //Lorsque le bouton connexion est sélectionné
+
         connexionMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Test Connexion");
                 // Affichage de la connexion
-                showConnexion(utilisateurControlleur, connexion, barreDeTache.this);
+                frame.getContentPane().removeAll();
+                frame.getContentPane().add(connexion.initializeConnexionView());
+                frame.revalidate();
             }
         });
 
-        //Lorsque le bouton inscription est sélectionné
         inscriptionMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Menu Inscription sélectionné");
-                // Affichage de l'inscription
-                showInscription(utilisateurControlleur, barreDeTache.this);
+                frame.getContentPane().removeAll();
+                accueil accueilPanel = new accueil();
+                accueilPanel.initializeAccueilView();
+                frame.getContentPane().add(accueilPanel);
+                frame.revalidate();
             }
         });
     }
-
-    public void showAccueil() {
-        frame.getContentPane().removeAll();
-        accueil accueilPanel = new accueil();
-        accueilPanel.initializeAccueilView();
-        frame.getContentPane().add(accueilPanel);
-        frame.revalidate();
-    }
-
-    private void showConnexion(utilisateurControlleur utilisateurControlleur, Connection connexion, barreDeTache barreDeTache) {
-        frame.getContentPane().removeAll();
-        connexion connexionPanel = new connexion(utilisateurControlleur, connexion, barreDeTache);
-        frame.getContentPane().add(connexionPanel.initializeConnexionView());
-        frame.revalidate();
-    }
-
-    private void showInscription(utilisateurControlleur utilisateurControlleur, barreDeTache barreDeTache) {
-        frame.getContentPane().removeAll();
-        Inscription inscriptionPanel = new Inscription(utilisateurControlleur, barreDeTache);
-        frame.getContentPane().add(inscriptionPanel.initializeInscriptionView());
-        frame.revalidate();
-    }
-
-
-
 }
