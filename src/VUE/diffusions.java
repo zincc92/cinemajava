@@ -1,18 +1,22 @@
-//diffusion bien
-
 package VUE;
+
 import javax.swing.*;
 import java.awt.*;
-import java.sql.*;
-import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.*;
+import java.util.ArrayList;
 
 public class diffusions extends JPanel {
+    private JPanel mainPanel;
+    private JPanel detailPanel;
+    private JButton backButton;
+    private JButton reserveButton;
+
     public diffusions() {
         setLayout(new BorderLayout());
 
-        JPanel panel = new JPanel(new GridLayout(0, 3, 10, 10)); // GridLayout avec 3 colonnes et un espacement de 10 pixels
+        mainPanel = new JPanel(new GridLayout(0, 3, 10, 10)); // GridLayout avec 3 colonnes et un espacement de 10 pixels
 
         // Récupérer les films depuis la base de données
         ArrayList<Film> films = getFilmsFromDatabase();
@@ -20,10 +24,10 @@ public class diffusions extends JPanel {
         // Créer un panneau pour chaque film
         for (Film film : films) {
             FilmPanel filmPanel = new FilmPanel(film);
-            panel.add(filmPanel);
+            mainPanel.add(filmPanel);
         }
 
-        JScrollPane scrollPane = new JScrollPane(panel); // Ajouter le panneau dans un JScrollPane
+        JScrollPane scrollPane = new JScrollPane(mainPanel); // Ajouter le panneau dans un JScrollPane
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // Toujours afficher la barre de défilement verticale
         add(scrollPane, BorderLayout.CENTER); // Ajouter le JScrollPane à la disposition principale
     }
@@ -62,76 +66,95 @@ public class diffusions extends JPanel {
         return films;
     }
 
+    // Méthode pour afficher les détails d'un film
+    private void showDetails(Film film) {
+        detailPanel = new JPanel(new BorderLayout());
 
+        // Création d'un panneau pour l'image et les détails
+        JPanel contentPanel = new JPanel(new BorderLayout());
+        detailPanel.add(contentPanel, BorderLayout.CENTER);
+
+        // Afficher l'image du film
+        JLabel imageLabel = new JLabel(new ImageIcon("image/" + film.getImage()));
+        contentPanel.add(imageLabel, BorderLayout.CENTER);
+
+        // Création du panneau pour les détails
+        JPanel filmDetailsPanel = new JPanel();
+        filmDetailsPanel.setLayout(new GridLayout(0, 1));
+        filmDetailsPanel.add(new JLabel("Réalisateur: " + film.getRealisateur()));
+        filmDetailsPanel.add(new JLabel("Thèmes: " + film.getThemes()));
+        filmDetailsPanel.add(new JLabel("Synopsis: " + film.getSynopsis()));
+        filmDetailsPanel.add(new JLabel("Prix: " + film.getPrix()));
+        filmDetailsPanel.add(new JLabel("Date: " + film.getDate()));
+        filmDetailsPanel.add(new JLabel("Horaire: " + film.getHoraire()));
+        contentPanel.add(filmDetailsPanel, BorderLayout.SOUTH);
+
+        // Ajout du bouton "Réserver"
+        reserveButton = new JButton("Réserver");
+        reserveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Mettre ici l'action à effectuer lors de la réservation
+            }
+        });
+        backButton = new JButton("Retour");
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Revenir à la vue principale
+                removeAll();
+                add(new JScrollPane(mainPanel), BorderLayout.CENTER);
+                revalidate();
+                repaint();
+            }
+        });
+
+        // Ajout du bouton "Retour" et "Réserver"
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(backButton);
+        buttonPanel.add(Box.createHorizontalStrut(10)); // Espacement entre les boutons
+        buttonPanel.add(reserveButton);
+        detailPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        backButton.setPreferredSize(new Dimension(250, 50)); // Largeur: 100 pixels, Hauteur: 30 pixels
+
+
+        reserveButton.setPreferredSize(new Dimension(300, 50)); // Largeur: 100 pixels, Hauteur: 30 pixels
+
+
+        // Afficher les détails du film
+        removeAll();
+        add(new JScrollPane(detailPanel), BorderLayout.CENTER);
+        revalidate();
+        repaint();
+    }
 
     // Classe interne pour représenter un film sous forme de panneau
     public class FilmPanel extends JPanel {
         private Film film;
-        private JLabel imageLabel;
-        private JPanel detailsPanel;
-        private JButton detailsButton;
-        private JButton hideDetailsButton;
 
         public FilmPanel(Film film) {
             this.film = film;
             setLayout(new BorderLayout());
 
-            // Création d'un panneau pour l'image et les boutons
+            // Création d'un panneau pour l'image
             JPanel contentPanel = new JPanel(new BorderLayout());
             add(contentPanel, BorderLayout.CENTER);
 
             // Afficher l'image du film
-            imageLabel = new JLabel(new ImageIcon("image/" + film.getImage()));
+            JLabel imageLabel = new JLabel(new ImageIcon("image/" + film.getImage()));
             contentPanel.add(imageLabel, BorderLayout.CENTER);
 
-            // Création du bouton "Voir les détails"
-            detailsButton = new JButton("Voir les détails");
+            // Création du bouton "Plus d'informations"
+            JButton detailsButton = new JButton("Plus d'informations");
             detailsButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    toggleDetails(); // Action à effectuer lors du clic sur le bouton pour afficher/masquer les détails
+                    showDetails(film); // Afficher les détails du film lorsque le bouton est cliqué
                 }
             });
             contentPanel.add(detailsButton, BorderLayout.SOUTH);
-
-            // Création d'un panneau pour afficher les détails
-            detailsPanel = new JPanel();
-            detailsPanel.setLayout(new GridLayout(0, 1));
-            detailsPanel.setVisible(false); // Masquer le panneau des détails par défaut
-            detailsPanel.add(new JLabel("Réalisateur: " + film.getRealisateur()));
-            detailsPanel.add(new JLabel("Thèmes: " + film.getThemes()));
-            detailsPanel.add(new JLabel("Synopsis: " + film.getSynopsis()));
-            detailsPanel.add(new JLabel("Prix: " + film.getPrix()));
-            detailsPanel.add(new JLabel("Date: " + film.getDate()));
-            detailsPanel.add(new JLabel("Horaire: " + film.getHoraire()));
-            add(detailsPanel, BorderLayout.SOUTH);
-
-            // Création du bouton "Cacher les détails"
-            hideDetailsButton = new JButton("Cacher les détails");
-            hideDetailsButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    hideDetails(); // Action à effectuer lors du clic sur le bouton pour cacher les détails
-                }
-            });
-            hideDetailsButton.setVisible(false); // Masquer le bouton "Cacher les détails" par défaut
-            detailsPanel.add(hideDetailsButton);
-        }
-
-        // Méthode pour afficher ou masquer les détails du film
-        private void toggleDetails() {
-            // Afficher ou masquer le panneau des détails
-            detailsPanel.setVisible(!detailsPanel.isVisible());
-            // Afficher ou masquer le bouton "Cacher les détails" en conséquence
-            hideDetailsButton.setVisible(detailsPanel.isVisible());
-        }
-
-        // Méthode pour cacher les détails du film
-        private void hideDetails() {
-            // Cacher le panneau des détails
-            detailsPanel.setVisible(false);
-            // Masquer le bouton "Cacher les détails"
-            hideDetailsButton.setVisible(false);
         }
     }
 
