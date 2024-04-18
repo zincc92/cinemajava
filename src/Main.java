@@ -36,9 +36,10 @@ public class Main {
                     frame.setResizable(false);
 
 
-                    connexion session = new connexion();
+                    connexion session = null;
                     barreDeTache menuBar = new barreDeTache(frame, utilisateurControlleur, connexion, session);
                     frame.setJMenuBar(menuBar);
+                    System.out.println("TOUR DE BOUCLE");
 
                     //Accueil accueil = new Accueil();
                     //frame.add(accueil);

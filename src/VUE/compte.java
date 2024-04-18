@@ -2,119 +2,157 @@ package VUE;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public class compte extends JFrame {
+import MODELE.*;
+import MODELE.connexion;
 
-    public compte() {
-        setTitle("Page de compte client");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(600, 400);
-        setLocationRelativeTo(null);
+public class compte extends JPanel {
+    private JPanel infoPanel; // Panel pour afficher les informations utilisateur
+    private JPanel reservationPanel; // Panel pour afficher les réservations de films
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-
-        // Création d'un panneau pour afficher les informations du client
-        JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new GridLayout(5, 2, 10, 10));
-
-        JLabel nomLabel = new JLabel("Nom:");
-        JTextField nomField = new JTextField();
-        nomField.setEditable(false); // Rendre le champ non éditable
-        JLabel emailLabel = new JLabel("Email:");
-        JTextField emailField = new JTextField();
-        emailField.setEditable(false); // Rendre le champ non éditable
-        JLabel passwordLabel = new JLabel("Mot de passe:");
-        JTextField passwordField = new JTextField();
-        passwordField.setEditable(false); // Rendre le champ non éditable
-        JLabel reservationsLabel = new JLabel("Réservations de films:");
-        JTextField reservationsField = new JTextField();
-        reservationsField.setEditable(false); // Rendre le champ non éditable
-
-        infoPanel.add(nomLabel);
-        infoPanel.add(nomField);
-        infoPanel.add(emailLabel);
-        infoPanel.add(emailField);
-        infoPanel.add(passwordLabel);
-        infoPanel.add(passwordField);
-        infoPanel.add(reservationsLabel);
-        infoPanel.add(reservationsField);
-
-        panel.add(infoPanel, BorderLayout.CENTER);
-
-        // Bouton pour ouvrir l'onglet de modification
-        JButton modifierButton = new JButton("Modifier");
-        modifierButton.addActionListener(e -> {
-            // Ouvrir un nouvel onglet pour la modification
-            modifierInfosClient(nomField.getText(), emailField.getText(), passwordField.getText(), reservationsField.getText());
-        });
-
-        // Ajouter le bouton de modification en bas de la fenêtre
-        panel.add(modifierButton, BorderLayout.SOUTH);
-
-        getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(panel, BorderLayout.CENTER);
-
-        // Rendre la fenêtre visible après avoir ajouté tous les composants
-        setVisible(true);
+    public compte(Connection connexion, connexion session) {
+        initializeMonCompteView(connexion, session);
     }
 
-    // Méthode pour ouvrir l'onglet de modification
-    private void modifierInfosClient(String nom, String email, String password, String reservations) {
-        JFrame frame = new JFrame("Modifier les informations du client");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(400, 300);
-        frame.setLocationRelativeTo(null);
+    public void initializeMonCompteView(Connection connexion, connexion session) {
+        setLayout(new BorderLayout());
+        System.out.println("Dedans1" + session.getUser());
+        // Panel pour afficher les informations utilisateur
+        infoPanel = new JPanel(new GridLayout(0, 1));
+        add(infoPanel, BorderLayout.WEST);
 
-        // Ajouter les composants de modification ici (nom, email, mot de passe, réservations de films...)
-        // Vous pouvez utiliser des JTextField, JPasswordField, JTextArea, etc., pour permettre la modification
+        // Panel pour afficher les réservations de films
+        reservationPanel = new JPanel(new GridLayout(0, 1));
+        JScrollPane scrollPane = new JScrollPane(reservationPanel);
+        add(scrollPane, BorderLayout.CENTER);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(6, 2, 10, 10));
+        // Charger et afficher les informations utilisateur
+        afficherInformationsUtilisateur(connexion, session);
 
-        JLabel nomLabel = new JLabel("Nom:");
-        JTextField nomField = new JTextField(nom);
-        JLabel emailLabel = new JLabel("Email:");
-        JTextField emailField = new JTextField(email);
-        JLabel passwordLabel = new JLabel("Nouveau mot de passe:");
-        JPasswordField newPasswordField = new JPasswordField();
-        JLabel reservationsLabel = new JLabel("Réservations de films:");
-        JTextArea reservationsField = new JTextArea(reservations);
-
-        panel.add(nomLabel);
-        panel.add(nomField);
-        panel.add(emailLabel);
-        panel.add(emailField);
-        panel.add(passwordLabel);
-        panel.add(newPasswordField);
-        panel.add(reservationsLabel);
-        panel.add(reservationsField);
-
-        // Boutons "Revenir à mon compte" et "Valider"
-        JButton retourButton = new JButton("Revenir à mon compte");
-        retourButton.addActionListener(e -> frame.dispose()); // Ferme la fenêtre de modification
-
-        JButton validerButton = new JButton("Valider");
-        validerButton.addActionListener(e -> {
-            // Insérer ici la logique de validation des modifications dans la base de données
-            // Une fois les modifications validées, vous pouvez fermer la fenêtre de modification
-            frame.dispose();
-        });
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.add(retourButton);
-        buttonPanel.add(validerButton);
-
-        frame.getContentPane().setLayout(new BorderLayout());
-        frame.getContentPane().add(panel, BorderLayout.CENTER);
-        frame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-
-        frame.setVisible(true);
+        // Charger et afficher les réservations de films
+        afficherReservations(connexion, session);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(compte::new);
+    // Méthode pour charger et afficher les informations utilisateur depuis la base de données
+    private void afficherInformationsUtilisateur(Connection connexion, connexion session) {
+        // Supprimer les informations utilisateur précédemment affichées
+        infoPanel.removeAll();
+        System.out.println("Dedans2" + session.getUser());
+        try {
+            // Récupérer l'ID de l'utilisateur à partir de l'email
+            String email = session.getUser().getEmail();
+            String queryId = "SELECT id FROM clients WHERE email = ?";
+            PreparedStatement preparedStatementId = connexion.prepareStatement(queryId);
+            preparedStatementId.setString(1, email);
+            ResultSet resultSetId = preparedStatementId.executeQuery();
+
+            int idUtilisateur = -1; // Initialiser à une valeur impossible
+
+            // Vérifier si un résultat est retourné
+            if (resultSetId.next()) {
+                idUtilisateur = resultSetId.getInt("id");
+            }
+
+            // Fermer les ressources
+            resultSetId.close();
+            preparedStatementId.close();
+
+            if (idUtilisateur != -1) {
+                // Récupérer les autres informations de l'utilisateur à partir de son ID
+                String queryInfo = "SELECT * FROM clients WHERE id = ?";
+                PreparedStatement preparedStatementInfo = connexion.prepareStatement(queryInfo);
+                preparedStatementInfo.setInt(1, idUtilisateur);
+                ResultSet resultSetInfo = preparedStatementInfo.executeQuery();
+
+                // Afficher les informations utilisateur sur le panneau
+                if (resultSetInfo.next()) {
+                    String nomUtilisateur = resultSetInfo.getString("nom");
+                    String emailUtilisateur = resultSetInfo.getString("email");
+                    // Ajouter d'autres informations utilisateur si nécessaire
+
+                    // Afficher les informations utilisateur sur des labels
+                    JLabel nomLabel = new JLabel("Nom: " + nomUtilisateur);
+                    JLabel emailLabel = new JLabel("Email: " + emailUtilisateur);
+                    // Ajouter d'autres labels pour les autres informations utilisateur si nécessaire
+
+                    // Ajouter les labels au panel d'informations utilisateur
+                    infoPanel.add(nomLabel);
+                    infoPanel.add(emailLabel);
+                    // Ajouter d'autres labels au panel d'informations utilisateur si nécessaire
+                }
+
+                // Fermer les ressources
+                resultSetInfo.close();
+                preparedStatementInfo.close();
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        // Rafraîchir l'affichage du panel d'informations utilisateur
+        infoPanel.revalidate();
+        infoPanel.repaint();
     }
 
+    // Méthode pour charger et afficher les réservations de films depuis la base de données
+    private void afficherReservations(Connection connexion, connexion session) {
+        // Supprimer les réservations de films précédemment affichées
+        reservationPanel.removeAll();
+        System.out.println("Dedans3" + session.getUser());
+        try {
+            // Récupérer l'ID de l'utilisateur à partir de l'email
+            String email = session.getUser().getEmail();
+            String queryId = "SELECT id FROM clients WHERE email = ?";
+            PreparedStatement preparedStatementId = connexion.prepareStatement(queryId);
+            preparedStatementId.setString(1, email);
+            ResultSet resultSetId = preparedStatementId.executeQuery();
+
+            int idUtilisateur = -1; // Initialiser à une valeur impossible
+
+            // Vérifier si un résultat est retourné
+            if (resultSetId.next()) {
+                idUtilisateur = resultSetId.getInt("id");
+            }
+
+            // Fermer les ressources
+            resultSetId.close();
+            preparedStatementId.close();
+
+            if (idUtilisateur != -1) {
+                // Récupérer les réservations de films de l'utilisateur à partir de son ID
+                String query = "SELECT * FROM reservations WHERE id_client = ?";
+                PreparedStatement preparedStatement = connexion.prepareStatement(query);
+                preparedStatement.setInt(1, idUtilisateur);
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                // Parcourir les résultats et afficher chaque réservation de film sur le panneau
+                while (resultSet.next()) {
+                    int idFilm = resultSet.getInt("id_film");
+                    int quantite = resultSet.getInt("quantite");
+                    // Ajouter d'autres informations sur la réservation si nécessaire
+
+                    // Créer une chaîne de texte avec les informations sur la réservation
+                    String infoReservation = "ID du film: " + idFilm + " | Quantité: " + quantite;
+                    JLabel label = new JLabel(infoReservation);
+
+                    // Ajouter le label au panel de réservations de films
+                    reservationPanel.add(label);
+                }
+
+                // Fermer les ressources
+                resultSet.close();
+                preparedStatement.close();
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        // Rafraîchir l'affichage du panel de réservations de films
+        reservationPanel.revalidate();
+        reservationPanel.repaint();
+    }
 }

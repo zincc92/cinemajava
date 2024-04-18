@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 public class connexion {
     public String token; // Token unique pour la session
     public utilisateur user; // Utilisateur connecté
+    private static MODELE.connexion currentSession;
 
     public connexion() {
         this.token = null;
@@ -56,6 +57,14 @@ public class connexion {
 
     public static PreparedStatement prepareStatement(String query) {
         return null;
+    }
+
+    public static void setSession(MODELE.connexion session) {
+        currentSession = session;
+    }
+
+    public static MODELE.connexion getSession() {
+        return currentSession;
     }
 }
 
