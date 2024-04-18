@@ -19,7 +19,7 @@ public class connexion {
     private JPasswordField passwordField;
     private JButton loginButton;
     private barreDeTache barreDeTache;
-    private MODELE.connexion session;
+    public MODELE.connexion session;
 
     public connexion(utilisateurControlleur user, Connection connexion, barreDeTache barreDeTache, MODELE.connexion session) {
         this.user = user;
@@ -76,6 +76,7 @@ public class connexion {
                 utilisateurControlleur controller = new utilisateurControlleur(connexion);
                 session = controller.creerSession(email, password);
                 if (session != null) {
+                    MODELE.connexion.setSession(session);
                     // Passer la connexion au contrôleur utilisateur si la connexion réussit
                     controller.setConnexion(connexion);
                     JOptionPane.showMessageDialog(frame, "Connexion réussie!");
@@ -83,9 +84,8 @@ public class connexion {
                     System.out.println("Utilisateur connecté : " + session.getUser().getNom());
                     // Rediriger vers la page d'accueil
                     barreDeTache.updateButtons(session);
-                    barreDeTache.showAccueil();
-
-
+                    barreDeTache.showAccueil(session);
+                    barreDeTache.updateSession(session);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Email ou mot de passe incorrect!");
                 }
@@ -108,7 +108,7 @@ public class connexion {
             session.token = null;
             System.out.println("Utilisateur déconnecté");
             barreDeTache.updateButtons(session);
-            barreDeTache.showAccueil();
+            barreDeTache.showAccueil(session);
             // Supprimer les composants liés à la session précédente
             panel.removeAll();
             panel.revalidate();

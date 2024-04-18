@@ -3,6 +3,7 @@ package VUE;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.ConnectException;
 import java.sql.Connection;
 import java.util.Objects;
 
@@ -38,6 +39,7 @@ public class barreDeTache extends JMenuBar {
         adminMenu = new JButton("Admin");
 
         updateButtons(session);
+        System.out.println("UPDATE TOUR DE BOUCLE");
 
         //Lorsque le bouton accueil est sélectionné
         accueilMenu.addActionListener(new ActionListener() {
@@ -45,7 +47,7 @@ public class barreDeTache extends JMenuBar {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Menu Accueil sélectionné");
                 // Affichage de l'accueil
-                showAccueil();
+                showAccueil(session);
             }
         });
 
@@ -55,7 +57,17 @@ public class barreDeTache extends JMenuBar {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Menu Diffusions sélectionné");
                 //Affichage de la diffusion
-                showDiffusions();
+                showDiffusions(session);
+            }
+        });
+
+        //Lorsque le bouton admin est sélectionné
+        adminMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Test bouton Admin");
+                // Appel de l'affichage admin
+                showAdmin(connexion);
             }
         });
 
@@ -84,7 +96,8 @@ public class barreDeTache extends JMenuBar {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Menu Mon Compte sélectionné");
                 // Affichage de l'accueil
-                showMonCompte();
+                System.out.println(session.getUser());
+                showMonCompte(connexion, session);
             }
         });
 
@@ -98,17 +111,19 @@ public class barreDeTache extends JMenuBar {
         });
     }
 
-    public void showAccueil() {
+    public void showAccueil(MODELE.connexion session) {
         frame.getContentPane().removeAll();
+        System.out.println(session.getUser());
         Accueil accueilPanel = new Accueil();
         accueilPanel.initializeAccueilView();
         frame.getContentPane().add(accueilPanel);
         frame.revalidate();
         frame.repaint();
     }
-    public void showMonCompte() {
+    public void showMonCompte(Connection connexion, MODELE.connexion session) {
         frame.getContentPane().removeAll();
-        compte comptePanel = new compte();
+        System.out.println(session.getUser());
+        compte comptePanel = new compte(connexion, session);
         //comptePanel.initializeCompteView();
         frame.getContentPane().add(comptePanel);
         frame.revalidate();
@@ -129,7 +144,7 @@ public class barreDeTache extends JMenuBar {
         frame.revalidate();
     }
 
-    private void showDiffusions(){
+    private void showDiffusions(MODELE.connexion session){
         frame.getContentPane().removeAll();
         diffusions diffusionsPanel = new diffusions();
         diffusionsPanel.initializediffusionsView();
@@ -143,6 +158,14 @@ public class barreDeTache extends JMenuBar {
         //frame.getContentPane().add(connexionInstance.initializeConnexionView());
         frame.revalidate();
         frame.repaint();
+    }
+
+    private void showAdmin(Connection connexion){
+        frame.getContentPane().removeAll();
+        admin adminPanel = new admin(connexion);
+        adminPanel.initializeAdminView(connexion);
+        frame.getContentPane().add(adminPanel);
+        frame.revalidate();
     }
 
     public void updateButtons(MODELE.connexion session) {
@@ -170,5 +193,9 @@ public class barreDeTache extends JMenuBar {
             }
         }
         revalidate(); // Rafraîchissez l'affichage de la barre de tâches
+    }
+    public void updateSession(MODELE.connexion session) {
+        this.session = session;
+        System.out.println("Session updated: " + session.getUser());
     }
 }
