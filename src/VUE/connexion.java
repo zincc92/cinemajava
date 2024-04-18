@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import javax.swing.*;
 
@@ -12,7 +14,7 @@ import MODELE.*;
 
 public class connexion {
     private final utilisateurControlleur user;
-    private final Connection connexion;
+    private Connection connexion;
     private JFrame frame;
     private JPanel panel;
     private JTextField emailField;
@@ -73,19 +75,17 @@ public class connexion {
             public void actionPerformed(ActionEvent e) {
                 String email = emailField.getText();
                 String password = new String(passwordField.getPassword());
-                utilisateurControlleur controller = new utilisateurControlleur(connexion);
-                session = controller.creerSession(email, password);
+                session = user.creerSession(email, password);
                 if (session != null) {
                     MODELE.connexion.setSession(session);
                     // Passer la connexion au contrôleur utilisateur si la connexion réussit
-                    controller.setConnexion(connexion);
+                    user.setConnexion(connexion);
                     JOptionPane.showMessageDialog(frame, "Connexion réussie!");
                     // Afficher le nom de l'utilisateur dans la console
                     System.out.println("Utilisateur connecté : " + session.getUser().getNom());
                     // Rediriger vers la page d'accueil
                     barreDeTache.updateButtons(session);
                     barreDeTache.showAccueil(session);
-                    barreDeTache.updateSession(session);
                 } else {
                     JOptionPane.showMessageDialog(frame, "Email ou mot de passe incorrect!");
                 }
@@ -104,8 +104,8 @@ public class connexion {
 
     public void deconnexion() {
         if (session != null) {
-            session.user = null; // Réinitialiser la session à null
-            session.token = null;
+            session = null; // Réinitialiser la référence de session à null
+            connexion = null; // Réinitialiser la référence de connexion à null
             System.out.println("Utilisateur déconnecté");
             barreDeTache.updateButtons(session);
             barreDeTache.showAccueil(session);

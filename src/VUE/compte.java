@@ -18,9 +18,9 @@ public class compte extends JPanel {
         initializeMonCompteView(connexion, session);
     }
 
-    private void initializeMonCompteView(Connection connexion, connexion session) {
+    public void initializeMonCompteView(Connection connexion, connexion session) {
         setLayout(new BorderLayout());
-
+        System.out.println("Dedans1" + session.getUser());
         // Panel pour afficher les informations utilisateur
         infoPanel = new JPanel(new GridLayout(0, 1));
         add(infoPanel, BorderLayout.WEST);
@@ -41,7 +41,7 @@ public class compte extends JPanel {
     private void afficherInformationsUtilisateur(Connection connexion, connexion session) {
         // Supprimer les informations utilisateur précédemment affichées
         infoPanel.removeAll();
-
+        System.out.println("Dedans2" + session.getUser());
         try {
             // Récupérer l'ID de l'utilisateur à partir de l'email
             String email = session.getUser().getEmail();
@@ -102,7 +102,7 @@ public class compte extends JPanel {
     private void afficherReservations(Connection connexion, connexion session) {
         // Supprimer les réservations de films précédemment affichées
         reservationPanel.removeAll();
-
+        System.out.println("Dedans3" + session.getUser());
         try {
             // Récupérer l'ID de l'utilisateur à partir de l'email
             String email = session.getUser().getEmail();
