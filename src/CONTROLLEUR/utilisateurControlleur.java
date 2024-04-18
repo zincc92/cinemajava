@@ -19,6 +19,15 @@ public class utilisateurControlleur {
         this.connexion = connexion;
     }
 
+    public boolean checkConnexion(){
+        if (connexion == null){
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
 
     public static boolean inscrireUtilisateur(utilisateur User) {
         String query = "INSERT INTO clients (type, nom, email, mdp) VALUES (?, ?, ?, ?)";
@@ -61,4 +70,5 @@ public class utilisateurControlleur {
             return null;
         }
     }
+
 }
