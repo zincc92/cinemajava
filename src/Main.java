@@ -15,9 +15,9 @@ import CONTROLLEUR.*;
 public class Main {
     public static void main(String[] args) {
         // Informations de connexion à la base de données
-        String url = "jdbc:mysql://localhost:3306/cinemaprojet";
+        String url = "jdbc:mysql://localhost:8889/cinemaprojet";
         String utilisateur = "root"; // Remplacez par votre nom d'utilisateur MySQL
-        String motDePasse = ""; // Remplacez par votre mot de passe MySQL
+        String motDePasse = "root"; // Remplacez par votre mot de passe MySQL
 
         // Connexion à la base de données
         try {

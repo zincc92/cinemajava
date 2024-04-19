@@ -226,7 +226,36 @@ public class admin extends JPanel {
                 double prixFilm = resultSet.getDouble("prix");
                 String infoFilm = "ID : "+idFilm+" | "+titreFilm + " | "+dateFilm+" "+heureFilm+" | "+themeFilm+" | "+realFilm+" | "+synopsisFilm+" | "+prixFilm+"€";
                 JLabel label = new JLabel(infoFilm);
+                JButton modifierButtonFilm = new JButton("Modifier");
+                JButton supprimerButtonFilm = new JButton("Supprimer");
+
+                // Ajout d'un écouteur d'événements pour le bouton "Modifier"
+                modifierButtonFilm.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Modifier un film dans la base de données
+                        System.out.println("Bouton Modifier Film cliqué");
+                        modifierFilm(connexion, idFilm);
+                    }
+                });
+
+                // Ajout d'un écouteur d'événements pour le bouton "Supprimer"
+                supprimerButtonFilm.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Supprimer le film de la base de données et de l'affichage
+                        System.out.println("Bouton Supprimer Film cliqué");
+                        supprimerFilm(connexion, idFilm);
+                    }
+                });
+
+                // Ajout des boutons au panel avec les informations de l'utilisateur
+                JPanel userPanelWithButtons = new JPanel(new FlowLayout());
+                userPanelWithButtons.add(label);
+                userPanelWithButtons.add(modifierButtonFilm);
+                userPanelWithButtons.add(supprimerButtonFilm);
                 userPanel.add(label);
+                userPanel.add(userPanelWithButtons);
             }
 
             // Fermer les ressources
@@ -331,4 +360,124 @@ public class admin extends JPanel {
             JOptionPane.showMessageDialog(null, "Erreur lors de l'ajout du film : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+
+    private void modifierFilm(Connection connexion, int idFilm){
+        try {
+            // Récupérer les informations du film à partir de la base de données
+            String query = "SELECT * FROM films WHERE id=?";
+            PreparedStatement preparedStatement = connexion.prepareStatement(query);
+            preparedStatement.setInt(1, idFilm);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Récupérer les informations du film
+            String nomFilm = "";
+            String realisateur = "";
+            String theme = "";
+            String synopsis = "";
+            Date dateFilm = null;
+            Time horaireFilm = null;
+            Double prixFilm = 0.0;
+
+
+            if (resultSet.next()) {
+                nomFilm = resultSet.getString("nom");
+                realisateur = resultSet.getString("realisateur");
+                theme = resultSet.getString("themes");
+                synopsis = resultSet.getString("synopsis");
+                dateFilm = resultSet.getDate("date");
+                horaireFilm = resultSet.getTime("horaire");
+                prixFilm = resultSet.getDouble("prix");
+            }
+
+            // Créer une boîte de dialogue pour modifier les informations de l'utilisateur
+            JTextField nomFilmField = new JTextField(nomFilm, 20);
+            JTextField dateField = new JTextField(dateFilm != null ? dateFilm.toString() : "", 10); // S'assurer que la date n'est pas null avant de la convertir en String
+            JTextField horaireField = new JTextField(horaireFilm != null ? horaireFilm.toString() : "", 5); // S'assurer que l'heure n'est pas null avant de la convertir en String
+            JTextField themeField = new JTextField(theme, 20);
+            JTextField realisateurField = new JTextField(realisateur, 20);
+            JTextField synopsisField = new JTextField(synopsis, 50);
+            JTextField prixFilmField = new JTextField(String.valueOf(prixFilm), 10);
+
+            JPanel panel = new JPanel(new GridLayout(0, 1));
+            panel.add(new JLabel("Titre:"));
+            panel.add(nomFilmField);
+            panel.add(new JLabel("Date:"));
+            panel.add(dateField);
+            panel.add(new JLabel("Horaire:"));
+            panel.add(horaireField);
+            panel.add(new JLabel("Theme:"));
+            panel.add(themeField);
+            panel.add(new JLabel("Realisateur:"));
+            panel.add(realisateurField);
+            panel.add(new JLabel("Synopsis:"));
+            panel.add(synopsisField);
+            panel.add(new JLabel("Prix:"));
+            panel.add(prixFilmField);
+
+            int result = JOptionPane.showConfirmDialog(null, panel, "Modifier information sur le film",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+            if (result == JOptionPane.OK_OPTION) {
+                // Récupérer les nouvelles valeurs
+                String nouveauNomFilm = nomFilmField.getText().isEmpty() ? nomFilm : nomFilmField.getText();
+                String nouveauRealisateur = realisateurField.getText().isEmpty() ? realisateur : realisateurField.getText();
+                String nouveauTheme = themeField.getText().isEmpty() ? theme : themeField.getText();
+                String nouveauSynopsis = synopsisField.getText().isEmpty() ? synopsis : synopsisField.getText();
+                String nouvelleDateStr = dateField.getText();
+                String nouvelHoraireStr = horaireField.getText();
+                String nouveauPrixStr = prixFilmField.getText();
+
+                // Si les champs de date et d'heure sont vides, on garde leur valeur initiale à null
+                Date nouvelleDate = nouvelleDateStr.isEmpty() ? dateFilm : Date.valueOf(nouvelleDateStr);
+                Time nouvelHoraire = nouvelHoraireStr.isEmpty() ? horaireFilm : Time.valueOf(nouvelHoraireStr);
+
+                // Convertir la chaîne de prix en double, garder la valeur initiale si la chaîne est vide
+                double nouveauPrix = nouveauPrixStr.isEmpty() ? prixFilm : Double.parseDouble(nouveauPrixStr);
+
+
+                // Mettre à jour les informations de l'utilisateur dans la base de données
+                String updateQuery = "UPDATE films SET nom=?, date=?, horaire=?, themes=?, realisateur=?, synopsis=?, prix=? WHERE id=?";
+                PreparedStatement updateStatement = connexion.prepareStatement(updateQuery);
+                updateStatement.setString(1, nouveauNomFilm);
+                updateStatement.setDate(2, nouvelleDate);
+                updateStatement.setTime(3, nouvelHoraire);
+                updateStatement.setString(4, nouveauTheme);
+                updateStatement.setString(5, nouveauRealisateur);
+                updateStatement.setString(6, nouveauSynopsis);
+                updateStatement.setDouble(7, nouveauPrix);
+                updateStatement.setInt(8, idFilm);
+                updateStatement.executeUpdate();
+                updateStatement.close();
+
+                // Rafraîchir l'affichage des utilisateurs
+                afficherFilms(connexion);
+
+                JOptionPane.showMessageDialog(null, "Les informations du film ont été mises à jour !");
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Erreur lors de la modification des informations du film : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void supprimerFilm(Connection connexion, int idFilm){
+        try {
+            // Supprimer le film de la base de données
+            String deleteQuery = "DELETE FROM films WHERE id = ?";
+            PreparedStatement preparedStatement = connexion.prepareStatement(deleteQuery);
+            preparedStatement.setInt(1, idFilm);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+
+            // Rafraîchir l'affichage des utilisateurs
+            afficherFilms(connexion);
+
+            JOptionPane.showMessageDialog(null, "Le film a été supprimé avec succès !");
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Erreur lors de la suppression du film : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 }
