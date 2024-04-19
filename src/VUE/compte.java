@@ -134,9 +134,10 @@ public class compte extends JPanel {
                     int idFilm = resultSet.getInt("id_film");
                     int quantite = resultSet.getInt("quantite");
                     // Ajouter d'autres informations sur la réservation si nécessaire
-
+                    String date = resultSet.getString("date");
+                    String horaire = resultSet.getString("horaire");
                     // Créer une chaîne de texte avec les informations sur la réservation
-                    String infoReservation = "ID du film: " + idFilm + " | Quantité: " + quantite;
+                    String infoReservation = "ID du film: " + idFilm + " | Quantité: " + quantite + "| Date : " + date + "| Horaires : " + horaire;
                     JLabel label = new JLabel(infoReservation);
 
                     // Ajouter le label au panel de réservations de films

@@ -56,8 +56,11 @@ public class barreDeTache extends JMenuBar {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Menu Diffusions sélectionné");
-                //Affichage de la diffusion
-                showDiffusions(session);
+                // Affichage de la page de diffusions
+                frame.getContentPane().removeAll();
+                diffusions diffusionsPanel = new diffusions();
+                frame.getContentPane().add(diffusionsPanel);
+                frame.revalidate();
             }
         });
 
@@ -131,15 +134,6 @@ public class barreDeTache extends JMenuBar {
         frame.getContentPane().removeAll();
         Inscription inscriptionPanel = new Inscription(utilisateurControlleur, barreDeTache);
         frame.getContentPane().add(inscriptionPanel.initializeInscriptionView());
-        frame.revalidate();
-        frame.repaint();
-    }
-
-    private void showDiffusions(MODELE.connexion session){
-        frame.getContentPane().removeAll();
-        diffusions diffusionsPanel = new diffusions();
-        diffusionsPanel.initializediffusionsView();
-        //frame.getContentPane().add(diffusionsPanel);
         frame.revalidate();
         frame.repaint();
     }
