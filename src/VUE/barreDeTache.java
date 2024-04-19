@@ -52,17 +52,7 @@ public class barreDeTache extends JMenuBar {
         });
 
         //Lorsque le bouton diffusion est sélectionné
-        diffusionsMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Menu Diffusions sélectionné");
-                // Affichage de la page de diffusions
-                frame.getContentPane().removeAll();
-                diffusions diffusionsPanel = new diffusions();
-                frame.getContentPane().add(diffusionsPanel);
-                frame.revalidate();
-            }
-        });
+
 
         //Lorsque le bouton admin est sélectionné
         adminMenu.addActionListener(new ActionListener() {
@@ -160,6 +150,18 @@ public class barreDeTache extends JMenuBar {
         // Ajoutez les autres boutons (comme Accueil et Diffusions)
         add(accueilMenu);
         add(diffusionsMenu);
+
+        diffusionsMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Menu Diffusions sélectionné");
+                // Affichage de la page de diffusions
+                frame.getContentPane().removeAll();
+                diffusions diffusionsPanel = new diffusions(session);
+                frame.getContentPane().add(diffusionsPanel);
+                frame.revalidate();
+            }
+        });
         add(Box.createHorizontalGlue()); // Ajout d'un espace flexible
 
         if (session == null) {

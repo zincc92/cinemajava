@@ -1,9 +1,6 @@
 package CONTROLLEUR;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.UUID;
 
 import MODELE.*;
@@ -68,6 +65,45 @@ public class utilisateurControlleur {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+    public static int getClientIdByEmail(String email) {
+        String query = "SELECT id FROM clients WHERE email = ?";
+        int clientId = -1; // Valeur par défaut si l'ID du client n'est pas trouvé
+        try {
+            PreparedStatement statement = connexion.prepareStatement(query);
+            statement.setString(1, email);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                clientId = resultSet.getInt("id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return clientId;
+    }
+
+    public static void insertReservation(connexion session, int idFilm, double prix, String emailClient, Date dateReservation, Time horaireReservation, String salle) {
+        int idClient = utilisateurControlleur.getClientIdByEmail(emailClient);
+        int quantite = 1;
+        if (idClient != -1) {
+            String query = "INSERT INTO reservations (id_film, id_client, prix, quantite,date_reservation, horaire_reservation, idSalle) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            // Récupérer la session actuelle
+            try {
+                PreparedStatement statement = connexion.prepareStatement(query);
+                statement.setInt(1, idFilm);
+                statement.setInt(2, idClient);
+                statement.setDouble(3, prix);
+                statement.setInt(4, quantite);
+                statement.setDate(5, dateReservation);
+                statement.setTime(6, horaireReservation);
+                statement.setString(7, salle);
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Client non trouvé avec l'email spécifié.");
         }
     }
 

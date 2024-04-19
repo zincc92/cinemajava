@@ -7,6 +7,9 @@ import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.ArrayList;
 
+import MODELE.connexion;
+import CONTROLLEUR.utilisateurControlleur;
+
 public class diffusions extends JPanel {
     private JPanel mainPanel;
     private JPanel detailPanel;
@@ -14,7 +17,7 @@ public class diffusions extends JPanel {
     private JButton reserveButton;
     private JPanel reservationPanel;
 
-    public diffusions() {
+    public diffusions(connexion session) {
         setLayout(new BorderLayout());
 
         mainPanel = new JPanel(new GridLayout(0, 3, 10, 10));
@@ -32,6 +35,8 @@ public class diffusions extends JPanel {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         add(scrollPane, BorderLayout.CENTER);
     }
+
+
 
     // Méthode pour récupérer les films depuis la base de données
     private ArrayList<Film> getFilmsFromDatabase() {
@@ -92,7 +97,7 @@ public class diffusions extends JPanel {
         reserveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showReservationPanel(film); // Afficher le panneau de réservation
+                showReservationPanel(film, connexion.getSession()); // Afficher le panneau de réservation
             }
         });
         backButton = new JButton("Retour");
@@ -179,7 +184,7 @@ public class diffusions extends JPanel {
     // Méthode pour afficher le panneau de réservation
     // Méthode pour afficher le panneau de réservation
     // Modifier la méthode showReservationPanel pour ajuster l'affichage des sessions
-    private void showReservationPanel(Film film) {
+    private void showReservationPanel(Film film, connexion session) {
         removeAll(); // Supprimer les composants existants
         reservationPanel = new JPanel(new BorderLayout());
 
@@ -216,9 +221,7 @@ public class diffusions extends JPanel {
             choisirButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    // Insérez ici le code pour traiter le choix de la session
-                    // Par exemple, vous pouvez afficher un message de confirmation
-                    // ou effectuer d'autres actions nécessaires.
+                    utilisateurControlleur.insertReservation(session, film.getId(), film.getPrix(), session.getUser().getEmail(), disponibilite.getDate(), disponibilite.getHoraire(), disponibilite.getSalle());
                     JOptionPane.showMessageDialog(null, "Session choisie : " + disponibilite.getDate() + " " + disponibilite.getHoraire() + " (Salle : " + disponibilite.getSalle() + ")");
                 }
             });
