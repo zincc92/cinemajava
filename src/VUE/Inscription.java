@@ -1,13 +1,13 @@
 package VUE;
 
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import CONTROLLEUR.*;
 import MODELE.*;
+import MODELE.connexion;
 
 public class Inscription {
 
@@ -86,7 +86,7 @@ public class Inscription {
                 boolean inscriptionReussie = utilisateurControlleur.inscrireUtilisateur(user);
                 if (inscriptionReussie) {
                     JOptionPane.showMessageDialog(frame, "Inscription réussie !");
-                    barreDeTache.showAccueil();
+                    barreDeTache.showAccueil(connexion.getSession());
                 } else {
                     JOptionPane.showMessageDialog(frame, "Erreur lors de l'inscription !");
                 }

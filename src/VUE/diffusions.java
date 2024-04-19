@@ -86,7 +86,7 @@ public class diffusions extends JPanel {
         filmDetailsPanel.add(new JLabel("Synopsis: " + film.getSynopsis()));
         filmDetailsPanel.add(new JLabel("Prix: " + film.getPrix()));
 
-              contentPanel.add(filmDetailsPanel, BorderLayout.SOUTH);
+        contentPanel.add(filmDetailsPanel, BorderLayout.SOUTH);
 
         reserveButton = new JButton("Réserver");
         reserveButton.addActionListener(new ActionListener() {

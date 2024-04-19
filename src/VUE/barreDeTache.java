@@ -3,7 +3,9 @@ package VUE;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.ConnectException;
 import java.sql.Connection;
+import java.util.Objects;
 
 import CONTROLLEUR.*;
 import MODELE.*;
@@ -18,6 +20,7 @@ public class barreDeTache extends JMenuBar {
     private JButton inscriptionMenu;
     private JButton monCompteMenu;
     private JButton deconnexion;
+    private JButton adminMenu;
     public connexion connexionPanel;
 
     public barreDeTache(JFrame frame, utilisateurControlleur utilisateurControlleur, Connection connexion, MODELE.connexion session) {
@@ -33,8 +36,10 @@ public class barreDeTache extends JMenuBar {
         // Si on est connecté :
         monCompteMenu = new JButton("Mon Compte");
         deconnexion = new JButton("Deconnexion");
+        adminMenu = new JButton("Admin");
 
         updateButtons(session);
+        System.out.println("UPDATE TOUR DE BOUCLE");
 
         //Lorsque le bouton accueil est sélectionné
         accueilMenu.addActionListener(new ActionListener() {
@@ -42,7 +47,7 @@ public class barreDeTache extends JMenuBar {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Menu Accueil sélectionné");
                 // Affichage de l'accueil
-                showAccueil();
+                showAccueil(session);
             }
         });
 
@@ -56,6 +61,16 @@ public class barreDeTache extends JMenuBar {
                 diffusions diffusionsPanel = new diffusions();
                 frame.getContentPane().add(diffusionsPanel);
                 frame.revalidate();
+            }
+        });
+
+        //Lorsque le bouton admin est sélectionné
+        adminMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Test bouton Admin");
+                // Appel de l'affichage admin
+                showAdmin(connexion);
             }
         });
 
@@ -79,34 +94,18 @@ public class barreDeTache extends JMenuBar {
             }
         });
 
-        accueilMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Menu Deconnexion sélectionné");
-                // Affichage de l'accueil
-
-            }
-        });
-        accueilMenu.addActionListener(new ActionListener() {
+        /*monCompteMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Menu Mon Compte sélectionné");
                 // Affichage de l'accueil
-                showMonCompte();
+                System.out.println(session.getUser());
+                showMonCompte(connexion, session);
             }
-        });
-
-        deconnexion.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Déconnexion sélectionné");
-                // Affichage de l'accueil
-                showDeconnexion(utilisateurControlleur, connexion, barreDeTache.this, connexionPanel, session);
-            }
-        });
+        });*/
     }
 
-    public void showAccueil() {
+    public void showAccueil(MODELE.connexion session) {
         frame.getContentPane().removeAll();
         Accueil accueilPanel = new Accueil();
         accueilPanel.initializeAccueilView();
@@ -114,12 +113,12 @@ public class barreDeTache extends JMenuBar {
         frame.revalidate();
         frame.repaint();
     }
-    public void showMonCompte() {
+    public void showMonCompte(Connection connexion, MODELE.connexion session) {
         frame.getContentPane().removeAll();
-        compte comptePanel = new compte();
-        comptePanel.initializeCompteView();
+        compte comptePanel = new compte(connexion, session);
         frame.getContentPane().add(comptePanel);
         frame.revalidate();
+        frame.repaint();
     }
 
 
@@ -128,6 +127,7 @@ public class barreDeTache extends JMenuBar {
         connexionPanel = new connexion(utilisateurControlleur, connexion, barreDeTache, session);
         frame.getContentPane().add(connexionPanel.initializeConnexionView());
         frame.revalidate();
+        frame.repaint();
     }
 
     private void showInscription(utilisateurControlleur utilisateurControlleur, barreDeTache barreDeTache) {
@@ -135,14 +135,22 @@ public class barreDeTache extends JMenuBar {
         Inscription inscriptionPanel = new Inscription(utilisateurControlleur, barreDeTache);
         frame.getContentPane().add(inscriptionPanel.initializeInscriptionView());
         frame.revalidate();
+        frame.repaint();
     }
 
-
-
-    private void showDeconnexion(utilisateurControlleur utilisateurControlleur, Connection connexion, barreDeTache barreDeTache, connexion connexionInstance, MODELE.connexion session) {
+    private void showDeconnexion(Connection connexion, barreDeTache barreDeTache, connexion connexionInstance, MODELE.connexion session) {
         frame.getContentPane().removeAll();
         connexionInstance.deconnexion();
         //frame.getContentPane().add(connexionInstance.initializeConnexionView());
+        frame.revalidate();
+        frame.repaint();
+    }
+
+    private void showAdmin(Connection connexion){
+        frame.getContentPane().removeAll();
+        admin adminPanel = new admin(connexion);
+        adminPanel.initializeAdminView(connexion);
+        frame.getContentPane().add(adminPanel);
         frame.revalidate();
         frame.repaint();
     }
@@ -154,17 +162,42 @@ public class barreDeTache extends JMenuBar {
         add(diffusionsMenu);
         add(Box.createHorizontalGlue()); // Ajout d'un espace flexible
 
-        if (session.user == null) {
+        if (session == null) {
             // Ajoutez les boutons de connexion et d'inscription
             add(connexionMenu);
             add(inscriptionMenu);
             System.out.println("on est deco");
+
         } else {
             // Ajoutez les boutons du compte utilisateur et de déconnexion
             add(monCompteMenu);
+            monCompteMenu.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("Menu Mon Compte sélectionné");
+                    System.out.println(session.getUser());
+                    showMonCompte(connexion, session);
+                }
+            });
             add(deconnexion);
+            deconnexion.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("Déconnexion sélectionné");
+                    // Chaffinch de l'accueil
+                    showDeconnexion(connexion, barreDeTache.this, connexionPanel, session);
+                }
+            });
             System.out.println("on est co");
+            System.out.println(session);
+            if (session != null & Objects.equals(session.getUser().getType(), String.valueOf(2))) {
+                add(adminMenu);
+            }
         }
         revalidate(); // Rafraîchissez l'affichage de la barre de tâches
+    }
+    public void updateSession(MODELE.connexion session) {
+        this.session = session;
+        System.out.println("Session updated: " + session.getUser());
     }
 }
