@@ -5,13 +5,26 @@ public class utilisateur {
     private String nom;
     private String email;
     private String motDePasse;
+    private int age; // Nouvel attribut pour l'âge
 
-    public utilisateur(String type, String nom, String email, String motDePasse) {
+    public utilisateur(String type, String nom, String email, String motDePasse, int age) {
         this.type = type;
         this.nom = nom;
         this.email = email;
         this.motDePasse = motDePasse;
+        this.age = age; // Initialisation de l'âge
     }
+
+    // Getters et setters pour l'âge
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    // Autres getters et setters
     public String getType() {
         return type;
     }
@@ -27,7 +40,4 @@ public class utilisateur {
     public String getMotDePasse() {
         return motDePasse;
     }
-
-    // Getters et setters
-    // Vous pouvez également ajouter d'autres méthodes selon vos besoins
 }

@@ -221,7 +221,16 @@ public class diffusions extends JPanel {
             choisirButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    utilisateurControlleur.insertReservation(session, film.getId(), film.getPrix(), session.getUser().getEmail(), disponibilite.getDate(), disponibilite.getHoraire(), disponibilite.getSalle());
+                    // Vérifier l'âge du client
+                    int age = session.getUser().getAge();
+                    double prix = film.getPrix();
+                    if (age < 18 || age > 60) {
+                        // Appliquer une réduction de 25% pour les juniors et les seniors
+                        prix *= 0.75;
+                    }
+
+                    // Insérer la réservation dans la base de données avec le prix ajusté
+                    utilisateurControlleur.insertReservation(session, film.getId(), prix, session.getUser().getEmail(), disponibilite.getDate(), disponibilite.getHoraire(), disponibilite.getSalle());
                     JOptionPane.showMessageDialog(null, "Session choisie : " + disponibilite.getDate() + " " + disponibilite.getHoraire() + " (Salle : " + disponibilite.getSalle() + ")");
                 }
             });

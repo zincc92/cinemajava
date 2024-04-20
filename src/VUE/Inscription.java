@@ -25,6 +25,20 @@ public class Inscription {
         this.barreDeTache = barreDeTache;
         initializeInscriptionView();
     }
+
+    public class IntegerInputVerifier extends InputVerifier {
+        @Override
+        public boolean verify(JComponent input) {
+            JTextField textField = (JTextField) input;
+            String text = textField.getText();
+            try {
+                Integer.parseInt(text); // Tentative de conversion de la saisie en entier
+                return true; // Si la conversion réussit, la saisie est valide
+            } catch (NumberFormatException e) {
+                return false; // Si une exception est levée, la saisie n'est pas un entier
+            }
+        }
+    }
     Component initializeInscriptionView() {
         panel = new JPanel();
         panel.setLayout(new GridBagLayout()); // Utilisation d'un GridBagLayout
@@ -68,9 +82,24 @@ public class Inscription {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(passwordField, gbc);
 
-        inscriptionButton = new JButton("Inscription");
+        JLabel ageLabel = new JLabel("Âge:");
         gbc.gridx = 0;
         gbc.gridy = 3;
+        gbc.fill = GridBagConstraints.NONE;
+        panel.add(ageLabel, gbc);
+
+        JTextField ageField = new JTextField(15); // Champ de saisie pour l'âge
+        ageField.setInputVerifier(new IntegerInputVerifier()); // Utilisation d'un vérificateur pour s'assurer que seul un entier est saisi
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(ageField, gbc);
+
+
+
+        inscriptionButton = new JButton("Inscription");
+        gbc.gridx = 0;
+        gbc.gridy = 4;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER; // Centrer le bouton
         panel.add(inscriptionButton, gbc);
@@ -82,7 +111,15 @@ public class Inscription {
                 String email = emailField.getText();
                 String type = "1";
                 String motDePasse = new String(passwordField.getPassword());
-                utilisateur user= new utilisateur(type, nom, email, motDePasse);
+                int age = 0; // Valeur par défaut
+                try {
+                    age = Integer.parseInt(ageField.getText());
+                } catch (NumberFormatException ex) {
+                    // Gérer l'exception si la saisie d'âge n'est pas un entier valide
+                    JOptionPane.showMessageDialog(frame, "Veuillez entrer un âge valide !");
+                    return; // Sortir de la méthode actionPerformed si la saisie n'est pas valide
+                }
+                utilisateur user = new utilisateur(type, nom, email, motDePasse, age);
                 boolean inscriptionReussie = utilisateurControlleur.inscrireUtilisateur(user);
                 if (inscriptionReussie) {
                     JOptionPane.showMessageDialog(frame, "Inscription réussie !");
@@ -90,9 +127,11 @@ public class Inscription {
                 } else {
                     JOptionPane.showMessageDialog(frame, "Erreur lors de l'inscription !");
                 }
-
             }
         });
+
+
+
 
         return panel;
     }

@@ -103,9 +103,9 @@ public class barreDeTache extends JMenuBar {
         frame.revalidate();
         frame.repaint();
     }
-    public void showMonCompte(Connection connexion, MODELE.connexion session) {
+    public void showMonCompte(Connection connexion, MODELE.connexion session, barreDeTache barreDeTache) {
         frame.getContentPane().removeAll();
-        compte comptePanel = new compte(connexion, session);
+        compte comptePanel = new compte(connexion, session, barreDeTache);
         frame.getContentPane().add(comptePanel);
         frame.revalidate();
         frame.repaint();
@@ -178,7 +178,7 @@ public class barreDeTache extends JMenuBar {
                 public void actionPerformed(ActionEvent e) {
                     System.out.println("Menu Mon Compte sélectionné");
                     System.out.println(session.getUser());
-                    showMonCompte(connexion, session);
+                    showMonCompte(connexion, session, barreDeTache.this);
                 }
             });
             add(deconnexion);

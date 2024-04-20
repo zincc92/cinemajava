@@ -6,19 +6,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
-import MODELE.*;
 import MODELE.connexion;
+import CONTROLLEUR.utilisateurControlleur;
 
 public class compte extends JPanel {
     private JPanel infoPanel; // Panel pour afficher les informations utilisateur
     private JPanel reservationPanel; // Panel pour afficher les réservations de films
 
-    public compte(Connection connexion, connexion session) {
-        initializeMonCompteView(connexion, session);
+    public compte(Connection connexion, connexion session, barreDeTache barreDeTache) {
+        initializeMonCompteView(connexion, session, barreDeTache);
     }
 
-    public void initializeMonCompteView(Connection connexion, connexion session) {
+    public void initializeMonCompteView(Connection connexion, connexion session, barreDeTache barreDeTache) {
         setLayout(new BorderLayout());
         System.out.println("Dedans1" + session.getUser());
         // Panel pour afficher les informations utilisateur
@@ -33,9 +34,19 @@ public class compte extends JPanel {
         // Charger et afficher les informations utilisateur
         afficherInformationsUtilisateur(connexion, session);
 
+        // Ajouter les rubriques des labels de réservations
+        JLabel labelRubriques = new JLabel("Réservations de films:");
+        reservationPanel.add(labelRubriques);
+
         // Charger et afficher les réservations de films
-        afficherReservations(connexion, session);
+        List<JPanel> labels = utilisateurControlleur.afficherReservations(connexion, session, barreDeTache);
+        for (JPanel label : labels) {
+            reservationPanel.add(label);
+        }
+        reservationPanel.revalidate();
+        reservationPanel.repaint();
     }
+
 
     // Méthode pour charger et afficher les informations utilisateur depuis la base de données
     private void afficherInformationsUtilisateur(Connection connexion, connexion session) {
@@ -99,61 +110,9 @@ public class compte extends JPanel {
     }
 
     // Méthode pour charger et afficher les réservations de films depuis la base de données
-    private void afficherReservations(Connection connexion, connexion session) {
-        // Supprimer les réservations de films précédemment affichées
-        reservationPanel.removeAll();
-        System.out.println("Dedans3" + session.getUser());
-        try {
-            // Récupérer l'ID de l'utilisateur à partir de l'email
-            String email = session.getUser().getEmail();
-            String queryId = "SELECT id FROM clients WHERE email = ?";
-            PreparedStatement preparedStatementId = connexion.prepareStatement(queryId);
-            preparedStatementId.setString(1, email);
-            ResultSet resultSetId = preparedStatementId.executeQuery();
 
-            int idUtilisateur = -1; // Initialiser à une valeur impossible
-
-            // Vérifier si un résultat est retourné
-            if (resultSetId.next()) {
-                idUtilisateur = resultSetId.getInt("id");
-            }
-
-            // Fermer les ressources
-            resultSetId.close();
-            preparedStatementId.close();
-
-            if (idUtilisateur != -1) {
-                // Récupérer les réservations de films de l'utilisateur à partir de son ID
-                String query = "SELECT * FROM reservations WHERE id_client = ?";
-                PreparedStatement preparedStatement = connexion.prepareStatement(query);
-                preparedStatement.setInt(1, idUtilisateur);
-                ResultSet resultSet = preparedStatement.executeQuery();
-
-                // Parcourir les résultats et afficher chaque réservation de film sur le panneau
-                while (resultSet.next()) {
-                    int idFilm = resultSet.getInt("id_film");
-                    int quantite = resultSet.getInt("quantite");
-                    // Ajouter d'autres informations sur la réservation si nécessaire
-                    String date = resultSet.getString("date");
-                    String horaire = resultSet.getString("horaire");
-                    // Créer une chaîne de texte avec les informations sur la réservation
-                    String infoReservation = "ID du film: " + idFilm + " | Quantité: " + quantite + "| Date : " + date + "| Horaires : " + horaire;
-                    JLabel label = new JLabel(infoReservation);
-
-                    // Ajouter le label au panel de réservations de films
-                    reservationPanel.add(label);
-                }
-
-                // Fermer les ressources
-                resultSet.close();
-                preparedStatement.close();
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
 
         // Rafraîchir l'affichage du panel de réservations de films
-        reservationPanel.revalidate();
-        reservationPanel.repaint();
-    }
+
 }
+
