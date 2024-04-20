@@ -218,15 +218,52 @@ public class admin extends JPanel {
             while (resultSet.next()) {
                 int idFilm = resultSet.getInt("id");
                 String titreFilm = resultSet.getString("nom");
-                Date dateFilm = resultSet.getDate("date");
-                Time heureFilm = resultSet.getTime("horaire");
-                String themeFilm = resultSet.getString("themes");
+                String imageFilm = resultSet.getString("image");
                 String realFilm = resultSet.getString("realisateur");
-                String synopsisFilm = resultSet.getString("synopsis");
+                String themeFilm = resultSet.getString("themes");
                 double prixFilm = resultSet.getDouble("prix");
-                String infoFilm = "ID : "+idFilm+" | "+titreFilm + " | "+dateFilm+" "+heureFilm+" | "+themeFilm+" | "+realFilm+" | "+synopsisFilm+" | "+prixFilm+"€";
+                String infoFilm = "ID : " + idFilm + " | " + titreFilm + " | " + realFilm + " | " + themeFilm + " | " + prixFilm + "€";
                 JLabel label = new JLabel(infoFilm);
-                userPanel.add(label);
+
+                // Chargement de l'image du film
+                ImageIcon icon = new ImageIcon("images/" + imageFilm + ".png");
+                JLabel imageLabel = new JLabel(icon);
+
+                // Créer un panneau pour regrouper les informations et l'image du film
+                JPanel filmPanel = new JPanel();
+                filmPanel.setLayout(new BoxLayout(filmPanel, BoxLayout.Y_AXIS));
+                filmPanel.add(imageLabel);
+                filmPanel.add(label);
+
+                // Créer un bouton pour ajouter une disponibilité
+                JButton addButton = new JButton("Ajouter une disponibilité");
+                addButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        // Boîte de dialogue pour saisir les informations sur la disponibilité
+                        JTextField dateField = new JTextField(10); // Format "yyyy-mm-dd"
+                        JTextField horaireField = new JTextField(5); // Format "hh:mm"
+                        JTextField salleField = new JTextField(10);
+                        JPanel panel = new JPanel(new GridLayout(0, 1));
+                        panel.add(new JLabel("Date (YYYY-MM-DD):"));
+                        panel.add(dateField);
+                        panel.add(new JLabel("Horaire (HH:MM):"));
+                        panel.add(horaireField);
+                        panel.add(new JLabel("Salle:"));
+                        panel.add(salleField);
+                        int result = JOptionPane.showConfirmDialog(null, panel, "Ajouter une disponibilité pour " + titreFilm,
+                                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                        if (result == JOptionPane.OK_OPTION) {
+                            // Récupérer les valeurs saisies
+                            String date = dateField.getText();
+                            String horaire = horaireField.getText();
+                            String salle = salleField.getText();
+                            // Insérer la disponibilité dans la base de données
+                            insererDisponibilite(connexion, idFilm, date, horaire, salle);
+                        }
+                    }
+                });
+                filmPanel.add(addButton);
+                userPanel.add(filmPanel);
             }
 
             // Fermer les ressources
@@ -240,6 +277,26 @@ public class admin extends JPanel {
         userPanel.revalidate();
         userPanel.repaint();
     }
+
+    // Méthode pour insérer une disponibilité dans la base de données
+    private void insererDisponibilite(Connection connexion, int idFilm, String date, String horaire, String salle) {
+        try {
+            String insertQuery = "INSERT INTO disponibilites_films (id_film, date, horaire, idSalle) VALUES (?, ?, ?, ?)";
+            PreparedStatement preparedStatement = connexion.prepareStatement(insertQuery);
+            preparedStatement.setInt(1, idFilm);
+            preparedStatement.setString(2, date);
+            preparedStatement.setString(3, horaire);
+            preparedStatement.setString(4, salle);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            JOptionPane.showMessageDialog(null, "Disponibilité ajoutée avec succès !");
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Erreur lors de l'ajout de la disponibilité : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+
 
     private int getLastFilmId(Connection connexion) throws SQLException {
         int lastId = 0;
@@ -263,10 +320,9 @@ public class admin extends JPanel {
         // Boîte de dialogue pour saisir les informations sur le nouveau film
         JTextField titreField = new JTextField(20);
         JTextField realisateurField = new JTextField(20);
-        JTextField dateField = new JTextField(10); // Format "yyyy-mm-dd"
-        JTextField horaireField = new JTextField(5); // Format "hh:mm"
-        JTextField themeField = new JTextField(20);
+        JTextField imageField = new JTextField(20); // Champ pour le nom de l'image
         JTextField synopsisField = new JTextField(50);
+        JTextField themesField = new JTextField(20);
         JTextField prixField = new JTextField(10);
 
         JPanel panel = new JPanel(new GridLayout(0, 1));
@@ -274,14 +330,12 @@ public class admin extends JPanel {
         panel.add(titreField);
         panel.add(new JLabel("Réalisateur:"));
         panel.add(realisateurField);
-        panel.add(new JLabel("Date (YYYY-MM-DD):"));
-        panel.add(dateField);
-        panel.add(new JLabel("Horaire (HH:MM):"));
-        panel.add(horaireField);
-        panel.add(new JLabel("Thème:"));
-        panel.add(themeField);
+        panel.add(new JLabel("Nom de l'image (sans extension):"));
+        panel.add(imageField);
         panel.add(new JLabel("Synopsis:"));
         panel.add(synopsisField);
+        panel.add(new JLabel("Thèmes:"));
+        panel.add(themesField);
         panel.add(new JLabel("Prix:"));
         panel.add(prixField);
 
@@ -292,37 +346,44 @@ public class admin extends JPanel {
             // Récupérer les valeurs saisies
             String titre = titreField.getText();
             String realisateur = realisateurField.getText();
-            String date = dateField.getText();
-            String horaire = horaireField.getText();
-            String theme = themeField.getText();
+            String imageNom = imageField.getText();
             String synopsis = synopsisField.getText();
+            String themes = themesField.getText();
             double prix = Double.parseDouble(prixField.getText());
 
-            // Générer un nouvel ID unique pour le film
-            int newId;
-            try {
-                newId = generateNewFilmId(connexion);
-                // Insérer le nouveau film dans la base de données avec l'ID généré
-                insererFilm(connexion, newId, titre, realisateur, date, horaire, theme, synopsis, prix);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Erreur lors de la génération du nouvel ID : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            // Vérifier si l'utilisateur a saisi un nom d'image
+            if (!imageNom.isEmpty()) {
+                try {
+                    // Construire le chemin de l'image
+                    String imagePath = imageNom + ".jpg";
+
+                    // Générer un nouvel ID unique pour le film
+                    int newId = generateNewFilmId(connexion);
+
+                    // Insérer le nouveau film dans la base de données avec l'ID généré
+                    insererFilm(connexion, newId, titre, realisateur, imagePath, synopsis, themes, prix);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Erreur lors de la génération du nouvel ID : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Veuillez saisir le nom de l'image du film.", "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
-    private void insererFilm(Connection connexion, int id,String titre, String realisateur, String date, String horaire, String theme, String synopsis, double prix) {
+
+    private void insererFilm(Connection connexion, int id, String titre, String realisateur, String image, String synopsis, String themes, double prix) {
         try {
-            String insertQuery = "INSERT INTO films (id, nom, realisateur, date, horaire, themes, synopsis, prix) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            String insertQuery = "INSERT INTO films (id, nom, realisateur, image, synopsis, themes, prix) VALUES (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = connexion.prepareStatement(insertQuery);
             preparedStatement.setInt(1, id);
             preparedStatement.setString(2, titre);
             preparedStatement.setString(3, realisateur);
-            preparedStatement.setString(4, date);
-            preparedStatement.setString(5, horaire);
-            preparedStatement.setString(6, theme);
-            preparedStatement.setString(7, synopsis);
-            preparedStatement.setDouble(8, prix);
+            preparedStatement.setString(4, image);
+            preparedStatement.setString(5, synopsis);
+            preparedStatement.setString(6, themes);
+            preparedStatement.setDouble(7, prix);
             preparedStatement.executeUpdate();
             preparedStatement.close();
             JOptionPane.showMessageDialog(null, "Le film a été ajouté avec succès !");
@@ -331,4 +392,5 @@ public class admin extends JPanel {
             JOptionPane.showMessageDialog(null, "Erreur lors de l'ajout du film : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 }
