@@ -84,6 +84,7 @@ public class admin extends JPanel {
             }
         });
     }
+    //activer les reducs
 
     private void activerReductions(Connection connexion) {
         try {
