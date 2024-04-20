@@ -6,12 +6,28 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 
+
 public class admin extends JPanel {
     private JPanel userPanel; // Panel pour afficher les utilisateurs
+    private JButton activerReductionsButton;
+    private boolean reductionsActivees = false; // Variable pour suivre l'état des réductions
 
     public admin(Connection connexion) {
         initializeAdminView(connexion);
     }
+
+    public class ReductionsState {
+        private static boolean reductionsActivees = false;
+
+        public static boolean areReductionsActivees() {
+            return reductionsActivees;
+        }
+
+        public static void setReductionsActivees(boolean activees) {
+            reductionsActivees = activees;
+        }
+    }
+
 
     public void initializeAdminView(Connection connexion) {
         setLayout(new BorderLayout());
@@ -21,6 +37,10 @@ public class admin extends JPanel {
         add(welcomeLabel, BorderLayout.NORTH);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
+
+        activerReductionsButton = new JButton(ReductionsState.areReductionsActivees() ? "Désactiver les réductions" : "Activer les réductions");
+        buttonPanel.add(activerReductionsButton);
+
         JButton voirUtilisateurButton = new JButton("Ensemble des utilisateurs");
         buttonPanel.add(voirUtilisateurButton);
         add(buttonPanel, BorderLayout.WEST);
@@ -35,6 +55,13 @@ public class admin extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ajouterFilm(connexion);
+            }
+        });
+
+        activerReductionsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                activerReductions(connexion);
             }
         });
 
@@ -57,6 +84,39 @@ public class admin extends JPanel {
             }
         });
     }
+
+    private void activerReductions(Connection connexion) {
+        try {
+            // Vérifier l'état actuel des réductions
+            if (ReductionsState.areReductionsActivees()) {
+                // Si les réductions sont activées, rétablissez les prix à leur valeur initiale en augmentant de 33.33%
+                String updateQuery = "UPDATE films SET prix = prix / 0.75"; // Rétablir les prix à leur valeur initiale en augmentant de 33.33%
+                Statement statement = connexion.createStatement();
+                statement.executeUpdate(updateQuery);
+                statement.close();
+
+                // Mettre à jour l'état des réductions et le libellé du bouton
+                activerReductionsButton.setText("Activer les réductions");
+                JOptionPane.showMessageDialog(null, "Les réductions ont été désactivées avec succès !");
+                ReductionsState.setReductionsActivees(false);
+            } else {
+                // Si les réductions ne sont pas activées, activez-les en réduisant de 25% les prix des films
+                String updateQuery = "UPDATE films SET prix = prix * 0.75"; // Réduire les prix de 25%
+                Statement statement = connexion.createStatement();
+                statement.executeUpdate(updateQuery);
+                statement.close();
+
+                // Mettre à jour l'état des réductions et le libellé du bouton
+                activerReductionsButton.setText("Désactiver les réductions");
+                JOptionPane.showMessageDialog(null, "Les réductions ont été activées avec succès !");
+                ReductionsState.setReductionsActivees(true);            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Erreur lors de l'activation/désactivation des réductions : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+
 
     // Méthode pour charger et afficher les utilisateurs depuis la base de données
     private void afficherUtilisateurs(Connection connexion) {
