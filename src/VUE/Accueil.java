@@ -4,8 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Accueil extends JPanel {
-    private JLabel welcomeLabel;
-    private JLabel footerLabel;
+    private JLabel imageLabel;
 
     public Accueil() {
         initializeAccueilView();
@@ -14,12 +13,14 @@ public class Accueil extends JPanel {
     public void initializeAccueilView() {
         setLayout(new BorderLayout());
 
-        welcomeLabel = new JLabel("Bienvenue sur notre application! Consultez les diffusions de films, réservez vos séances !");
-        welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        add(welcomeLabel, BorderLayout.CENTER);
+        // Créer un JLabel pour afficher l'image
+        ImageIcon imageIcon = new ImageIcon("src/IMAGES/accueil.png");
+        imageLabel = new JLabel(imageIcon);
 
-        footerLabel = new JLabel("© 2024 CinemaAPP tous droits réservés");
-        footerLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        add(footerLabel, BorderLayout.SOUTH);
+        // Centrer l'image horizontalement
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        // Ajouter le JLabel contenant l'image au panneau
+        add(imageLabel, BorderLayout.CENTER);
     }
 }
