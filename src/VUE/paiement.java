@@ -1,7 +1,13 @@
 package VUE;
 
+import CONTROLLEUR.utilisateurControlleur; // Importez la classe DisponibiliteFilm depuis la classe diffusions.diffusions
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.sql.Date;
+import java.sql.Time;
 
 public class paiement {
     private JFrame frame;
@@ -19,7 +25,7 @@ public class paiement {
 
     private void initializePaiementView() {
         frame = new JFrame("Paiement");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(400, 500); // Augmenté la hauteur pour accommoder les éléments
         frame.setResizable(false);
         centerFrameOnScreen(frame);
@@ -73,6 +79,17 @@ public class paiement {
 
         frame.getContentPane().add(panel);
         frame.setVisible(true);
+
+        payerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Code à exécuter lorsque le bouton "Payer" est cliqué
+                System.out.println("Bouton Payer cliqué !");
+                frame.dispose();
+                JOptionPane.showMessageDialog(null, "Paiement effectué\nRéservation réussie");
+            }
+        });
+
     }
 
     private void centerFrameOnScreen(JFrame frame) {
@@ -81,5 +98,6 @@ public class paiement {
         int y = (screenSize.height - frame.getHeight()) / 2;
         frame.setLocation(x, y);
     }
+
 
 }

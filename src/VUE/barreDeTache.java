@@ -37,7 +37,7 @@ public class barreDeTache extends JMenuBar {
         monCompteMenu = new JButton("Mon Compte");
         deconnexion = new JButton("Deconnexion");
         adminMenu = new JButton("Admin");
-
+        showAccueil(session);
         updateButtons(session);
         System.out.println("UPDATE TOUR DE BOUCLE");
 
