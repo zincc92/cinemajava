@@ -29,7 +29,6 @@
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files>
       <object connection-id="dffefb92-4bc0-40b1-8465-7b2106a6c734" object-ref="schemas/cinemaprojet/tables/reservations" />
-      <object connection-id="dffefb92-4bc0-40b1-8465-7b2106a6c734" object-ref="schemas/cinemaprojet/tables/films" />
     </open-files>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
@@ -41,6 +40,7 @@
     <filter-actions connection-id="3beaae6f-ee30-4ba0-93a7-63392a8d963b" dataset="projetcinema.clients" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="3beaae6f-ee30-4ba0-93a7-63392a8d963b" dataset="cinemaprojet.clients" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="dffefb92-4bc0-40b1-8465-7b2106a6c734" dataset="cinemaprojet.films" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="dffefb92-4bc0-40b1-8465-7b2106a6c734" dataset="cinemaprojet.disponibilites_films" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="dffefb92-4bc0-40b1-8465-7b2106a6c734" dataset="cinemaprojet.clients" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="dffefb92-4bc0-40b1-8465-7b2106a6c734" dataset="cinemaprojet.reservations" active-filter-id="EMPTY_FILTER">
       <filter id="aa96d395-8a5d-422e-b593-485b4cea1cb2" name="Filter 1" temporary="false" custom-name="false" type="basic" join-type="AND">

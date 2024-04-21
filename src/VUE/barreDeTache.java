@@ -52,14 +52,7 @@ public class barreDeTache extends JMenuBar {
         });
 
         //Lorsque le bouton diffusion est sélectionné
-        diffusionsMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Menu Diffusions sélectionné");
-                //Affichage de la diffusion
-                showDiffusions(session);
-            }
-        });
+
 
         //Lorsque le bouton admin est sélectionné
         adminMenu.addActionListener(new ActionListener() {
@@ -110,9 +103,9 @@ public class barreDeTache extends JMenuBar {
         frame.revalidate();
         frame.repaint();
     }
-    public void showMonCompte(Connection connexion, MODELE.connexion session) {
+    public void showMonCompte(Connection connexion, MODELE.connexion session, barreDeTache barreDeTache) {
         frame.getContentPane().removeAll();
-        compte comptePanel = new compte(connexion, session);
+        compte comptePanel = new compte(connexion, session, barreDeTache);
         frame.getContentPane().add(comptePanel);
         frame.revalidate();
         frame.repaint();
@@ -131,15 +124,6 @@ public class barreDeTache extends JMenuBar {
         frame.getContentPane().removeAll();
         Inscription inscriptionPanel = new Inscription(utilisateurControlleur, barreDeTache);
         frame.getContentPane().add(inscriptionPanel.initializeInscriptionView());
-        frame.revalidate();
-        frame.repaint();
-    }
-
-    private void showDiffusions(MODELE.connexion session){
-        frame.getContentPane().removeAll();
-        diffusions diffusionsPanel = new diffusions();
-        diffusionsPanel.initializediffusionsView();
-        //frame.getContentPane().add(diffusionsPanel);
         frame.revalidate();
         frame.repaint();
     }
@@ -166,6 +150,18 @@ public class barreDeTache extends JMenuBar {
         // Ajoutez les autres boutons (comme Accueil et Diffusions)
         add(accueilMenu);
         add(diffusionsMenu);
+
+        diffusionsMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Menu Diffusions sélectionné");
+                // Affichage de la page de diffusions
+                frame.getContentPane().removeAll();
+                diffusions diffusionsPanel = new diffusions(session);
+                frame.getContentPane().add(diffusionsPanel);
+                frame.revalidate();
+            }
+        });
         add(Box.createHorizontalGlue()); // Ajout d'un espace flexible
 
         if (session == null) {
@@ -182,7 +178,7 @@ public class barreDeTache extends JMenuBar {
                 public void actionPerformed(ActionEvent e) {
                     System.out.println("Menu Mon Compte sélectionné");
                     System.out.println(session.getUser());
-                    showMonCompte(connexion, session);
+                    showMonCompte(connexion, session, barreDeTache.this);
                 }
             });
             add(deconnexion);

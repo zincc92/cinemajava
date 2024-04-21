@@ -18,7 +18,6 @@ public class Main {
         String url = "jdbc:mysql://localhost:8889/cinemaprojet";
         String utilisateur = "root"; // Remplacez par votre nom d'utilisateur MySQL
         String motDePasse = "root"; // Remplacez par votre mot de passe MySQL
-
         // Connexion à la base de données
         try {
             Connection connexion = DriverManager.getConnection(url, utilisateur, motDePasse);
