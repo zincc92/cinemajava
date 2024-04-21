@@ -8,6 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 
 import MODELE.connexion;
+import MODELE.payer;
 import CONTROLLEUR.utilisateurControlleur;
 
 public class diffusions extends JPanel {
@@ -16,8 +17,11 @@ public class diffusions extends JPanel {
     private JButton backButton;
     private JButton reserveButton;
     private JPanel reservationPanel;
+    private connexion session;
 
     public diffusions(connexion session) {
+
+        this.session = session;
         setLayout(new BorderLayout());
 
         mainPanel = new JPanel(new GridLayout(0, 3, 10, 10));
@@ -42,8 +46,8 @@ public class diffusions extends JPanel {
     private ArrayList<Film> getFilmsFromDatabase() {
         ArrayList<Film> films = new ArrayList<>();
         String url = "jdbc:mysql://localhost:3306/cinemaprojet";
-        String utilisateur = "root";
-        String motDePasse = "";
+        String utilisateur = "root"; // Remplacez par votre nom d'utilisateur MySQL
+        String motDePasse = ""; // Remplacez par votre mot de passe MySQL
 
         try {
             Connection connexion = DriverManager.getConnection(url, utilisateur, motDePasse);
@@ -129,8 +133,8 @@ public class diffusions extends JPanel {
     private String getSalleName(int idSalle) {
         String salleName = "";
         String url = "jdbc:mysql://localhost:3306/cinemaprojet";
-        String utilisateur = "root";
-        String motDePasse = "";
+        String utilisateur = "root"; // Remplacez par votre nom d'utilisateur MySQL
+        String motDePasse = ""; // Remplacez par votre mot de passe MySQL
 
         try {
             Connection connexion = DriverManager.getConnection(url, utilisateur, motDePasse);
@@ -157,7 +161,6 @@ public class diffusions extends JPanel {
         String url = "jdbc:mysql://localhost:3306/cinemaprojet";
         String utilisateur = "root";
         String motDePasse = "";
-
         try {
             Connection connexion = DriverManager.getConnection(url, utilisateur, motDePasse);
             PreparedStatement statement = connexion.prepareStatement("SELECT df.date, df.horaire, s.numero FROM disponibilites_films df INNER JOIN salles s ON df.idSalle = s.id WHERE df.id_film = ?");
@@ -199,21 +202,14 @@ public class diffusions extends JPanel {
             JPanel sessionPanel = new JPanel(new BorderLayout());
             sessionPanel.setPreferredSize(new Dimension(100, 150)); // Définir une taille préférée pour chaque session
 
-            /*JLabel imageLabel = new JLabel(new ImageIcon("image/" + film.getImage()));
-            sessionPanel.add(imageLabel, BorderLayout.CENTER);*/
             JLabel salleLabel = new JLabel("Salle: " + disponibilite.getSalle());
             JLabel dateLabel = new JLabel("Date: " + disponibilite.getDate());
             JLabel horaireLabel = new JLabel("Horaire: " + disponibilite.getHoraire());
 
-
             JPanel infoPanel = new JPanel(new GridLayout(3, 1, 0, 5)); // Utilisation de GridLayout avec un espacement vertical de 5 pixels
-            //infoPanel.add(imageLabel);
             infoPanel.add(salleLabel);
             infoPanel.add(dateLabel);
             infoPanel.add(horaireLabel);
-
-            sessionPanel.add(infoPanel, BorderLayout.CENTER);
-
 
             sessionPanel.add(infoPanel, BorderLayout.CENTER);
 
@@ -221,17 +217,43 @@ public class diffusions extends JPanel {
             choisirButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    int nbrPlace = 1;
+                    int prix = 1;
                     // Vérifier l'âge du client
-                    int age = session.getUser().getAge();
-                    double prix = film.getPrix();
-                    if (age < 18 || age > 60) {
-                        // Appliquer une réduction de 25% pour les juniors et les seniors
-                        prix *= 0.75;
-                    }
 
-                    // Insérer la réservation dans la base de données avec le prix ajusté
-                    utilisateurControlleur.insertReservation(session, film.getId(), prix, session.getUser().getEmail(), disponibilite.getDate(), disponibilite.getHoraire(), disponibilite.getSalle());
-                    JOptionPane.showMessageDialog(null, "Session choisie : " + disponibilite.getDate() + " " + disponibilite.getHoraire() + " (Salle : " + disponibilite.getSalle() + ")");
+
+                    JTextField nbrPlaceTextField = new JTextField(String.valueOf(nbrPlace), 5);
+                    JPanel panel = new JPanel(new GridLayout(0, 1));
+                    panel.add(new JLabel("Nombre de place:"));
+                    panel.add(nbrPlaceTextField);
+
+                    int resultat = JOptionPane.showConfirmDialog(null, panel, "Choix nombre de place",
+                            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                    if (resultat == JOptionPane.OK_OPTION) {
+                        int nouveauNbrdePlace = Integer.parseInt(nbrPlaceTextField.getText());
+                        // Insérer la réservation dans la base de données avec le prix ajusté
+                        System.out.println("L'utilisateur à décider de réserver "+nouveauNbrdePlace+"place(s)");
+                        System.out.println("Prix du film : "+film.prix);
+                        System.out.println("Age de l'utilisateur : "+session.getUser().getAge());
+
+                        MODELE.payer payer = new MODELE.payer(film.prix, nouveauNbrdePlace, session.getUser().getAge());
+
+                        // Calculer le prix à payer en fonction du film choisi, du nombre de places et de l'âge de l'utilisateur
+                        double prixAPayer = payer.calculerPrix();
+
+                        // Afficher le prix à payer à l'utilisateur
+                        System.out.println("Prix à payer : " + prixAPayer);
+                        JOptionPane.showMessageDialog(null,"Prix d'une place : "+film.prix+"\nNombre de place : "+nouveauNbrdePlace+"\nPrix à payer : "+prixAPayer);
+                        // Vérifier le résultat du paiement
+                        if (prixAPayer != 0) {
+                            // Le paiement a été effectué avec succès
+                            paiement paiement=new paiement();
+                            utilisateurControlleur.insertReservation(session, film.getId(), prixAPayer, nouveauNbrdePlace, session.getUser().getEmail(), disponibilite.getDate(), disponibilite.getHoraire(), disponibilite.getSalle());
+                        } else {
+                            // Le paiement a échoué, affichez un message d'erreur ou prenez d'autres mesures appropriées
+                            JOptionPane.showMessageDialog(null, "Le paiement a échoué. Veuillez réessayer plus tard.", "Erreur de paiement", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
                 }
             });
 
@@ -247,8 +269,6 @@ public class diffusions extends JPanel {
         revalidate();
         repaint();
     }
-
-
 
 
 
