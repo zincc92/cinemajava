@@ -24,9 +24,8 @@ public class paiement {
     }
 
     private void initializePaiementView() {
-
         frame = new JFrame("Paiement");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(400, 500); // Augmenté la hauteur pour accommoder les éléments
         frame.setResizable(false);
         centerFrameOnScreen(frame);
@@ -99,5 +98,6 @@ public class paiement {
         int y = (screenSize.height - frame.getHeight()) / 2;
         frame.setLocation(x, y);
     }
+
 
 }

@@ -36,20 +36,24 @@ public class admin extends JPanel {
         welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         add(welcomeLabel, BorderLayout.NORTH);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout());
+        JPanel buttonPanel = new JPanel(new GridLayout(5, 1));
 
         activerReductionsButton = new JButton(ReductionsState.areReductionsActivees() ? "Désactiver les réductions" : "Activer les réductions");
         buttonPanel.add(activerReductionsButton);
 
         JButton voirUtilisateurButton = new JButton("Ensemble des utilisateurs");
         buttonPanel.add(voirUtilisateurButton);
-        add(buttonPanel, BorderLayout.WEST);
 
         JButton voirFilmsButton = new JButton("Ensemble des films");
         buttonPanel.add(voirFilmsButton);
 
         JButton ajouterFilmButton = new JButton("Ajouter un film");
         buttonPanel.add(ajouterFilmButton);
+
+        JButton voirReservationsButton = new JButton("Voir les réservations");
+        buttonPanel.add(voirReservationsButton); // Ajout du bouton pour visualiser les réservations
+
+        add(buttonPanel, BorderLayout.WEST);
 
         ajouterFilmButton.addActionListener(new ActionListener() {
             @Override
@@ -83,9 +87,16 @@ public class admin extends JPanel {
                 afficherUtilisateurs(connexion);
             }
         });
+
+        voirReservationsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Appeler la méthode pour visualiser les réservations
+                afficherReservations(connexion);
+            }
+        });
     }
     //activer les reducs
-
     private void activerReductions(Connection connexion) {
         try {
             // Vérifier l'état actuel des réductions
@@ -279,15 +290,52 @@ public class admin extends JPanel {
             while (resultSet.next()) {
                 int idFilm = resultSet.getInt("id");
                 String titreFilm = resultSet.getString("nom");
-                Date dateFilm = resultSet.getDate("date");
-                Time heureFilm = resultSet.getTime("horaire");
-                String themeFilm = resultSet.getString("themes");
+                String imageFilm = resultSet.getString("image");
                 String realFilm = resultSet.getString("realisateur");
-                String synopsisFilm = resultSet.getString("synopsis");
+                String themeFilm = resultSet.getString("themes");
                 double prixFilm = resultSet.getDouble("prix");
-                String infoFilm = "ID : "+idFilm+" | "+titreFilm + " | "+dateFilm+" "+heureFilm+" | "+themeFilm+" | "+realFilm+" | "+synopsisFilm+" | "+prixFilm+"€";
+                String infoFilm = "ID : " + idFilm + " | " + titreFilm + " | " + realFilm + " | " + themeFilm + " | " + prixFilm + "€";
                 JLabel label = new JLabel(infoFilm);
-                userPanel.add(label);
+
+                // Chargement de l'image du film
+                ImageIcon icon = new ImageIcon("images/" + imageFilm + ".png");
+                JLabel imageLabel = new JLabel(icon);
+
+                // Créer un panneau pour regrouper les informations et l'image du film
+                JPanel filmPanel = new JPanel();
+                filmPanel.setLayout(new BoxLayout(filmPanel, BoxLayout.Y_AXIS));
+                filmPanel.add(imageLabel);
+                filmPanel.add(label);
+
+                // Créer un bouton pour ajouter une disponibilité
+                JButton addButton = new JButton("Ajouter une disponibilité");
+                addButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        // Boîte de dialogue pour saisir les informations sur la disponibilité
+                        JTextField dateField = new JTextField(10); // Format "yyyy-mm-dd"
+                        JTextField horaireField = new JTextField(5); // Format "hh:mm"
+                        JTextField salleField = new JTextField(10);
+                        JPanel panel = new JPanel(new GridLayout(0, 1));
+                        panel.add(new JLabel("Date (YYYY-MM-DD):"));
+                        panel.add(dateField);
+                        panel.add(new JLabel("Horaire (HH:MM):"));
+                        panel.add(horaireField);
+                        panel.add(new JLabel("Salle:"));
+                        panel.add(salleField);
+                        int result = JOptionPane.showConfirmDialog(null, panel, "Ajouter une disponibilité pour " + titreFilm,
+                                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                        if (result == JOptionPane.OK_OPTION) {
+                            // Récupérer les valeurs saisies
+                            String date = dateField.getText();
+                            String horaire = horaireField.getText();
+                            String salle = salleField.getText();
+                            // Insérer la disponibilité dans la base de données
+                            insererDisponibilite(connexion, idFilm, date, horaire, salle);
+                        }
+                    }
+                });
+                filmPanel.add(addButton);
+                userPanel.add(filmPanel);
             }
 
             // Fermer les ressources
@@ -392,4 +440,61 @@ public class admin extends JPanel {
             JOptionPane.showMessageDialog(null, "Erreur lors de l'ajout du film : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
         }
     }
+    private void insererDisponibilite(Connection connexion, int idFilm, String date, String horaire, String salle) {
+        try {
+            String insertQuery = "INSERT INTO disponibilites_films (id_film, date, horaire, idSalle) VALUES (?, ?, ?, ?)";
+            PreparedStatement preparedStatement = connexion.prepareStatement(insertQuery);
+            preparedStatement.setInt(1, idFilm);
+            preparedStatement.setString(2, date);
+            preparedStatement.setString(3, horaire);
+            preparedStatement.setString(4, salle);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            JOptionPane.showMessageDialog(null, "Disponibilité ajoutée avec succès !");
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Erreur lors de l'ajout de la disponibilité : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void afficherReservations(Connection connexion) {
+        // Supprimer les réservations précédemment affichées
+        userPanel.removeAll();
+
+        try {
+            // Création d'une requête SQL pour récupérer les réservations en fonction de l'ID des clients
+            String query = "SELECT * FROM reservations";
+            // Exécution de la requête
+            Statement statement = connexion.createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
+
+            // Parcourir les résultats et afficher chaque réservation sur le panneau
+            while (resultSet.next()) {
+                int idReservation = resultSet.getInt("id");
+                int idClient = resultSet.getInt("id_client");
+                int idFilm = resultSet.getInt("id_film");
+                String dateReservation = resultSet.getString("date_reservation");
+                // Vous pouvez ajouter d'autres informations sur la réservation si nécessaire
+
+                // Créer une chaîne de texte avec les informations de la réservation
+                String infoReservation = "ID Réservation: " + idReservation + " | ID Client: " + idClient + " | ID Film: " + idFilm + " | Date Réservation: " + dateReservation;
+                JLabel label = new JLabel(infoReservation);
+
+                // Ajout des informations sur la réservation au panel
+                userPanel.add(label);
+            }
+
+            // Fermer les ressources
+            resultSet.close();
+            statement.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Erreur lors de la récupération des réservations : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+        }
+
+        // Rafraîchir l'affichage du panneau
+        userPanel.revalidate();
+        userPanel.repaint();
+    }
+
 }

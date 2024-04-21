@@ -17,11 +17,11 @@ public class payer {
 
         // Appliquer les réductions en fonction de l'âge de l'utilisateur
         if (ageUtilisateur < 25) {
-            // Remise de 25% pour les moins de 25 ans
-            prixTotal *= 0.75;
+            // Remise de 10% pour les moins de 25 ans
+            prixTotal *= 0.90;
         } else if (ageUtilisateur > 60) {
-            // Remise de 10% pour les seniors
-            prixTotal *= 0.9;
+            // Remise de 5% pour les seniors
+            prixTotal *= 0.95;
         }
 
         return prixTotal;

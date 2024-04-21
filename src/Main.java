@@ -28,20 +28,15 @@ public class Main {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     //Création de la fenêtre d'utilisation de l'application
-                    utilisateurControlleur utilisateurControlleur = new utilisateurControlleur(connexion);
+                    connexion session = null;
+                    utilisateurControlleur utilisateurControlleur = new utilisateurControlleur(connexion, session);
                     JFrame frame = new JFrame("CinemaAPP");
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     frame.setSize(1366, 768);
                     frame.setResizable(false);
-
-
-                    connexion session = null;
                     barreDeTache menuBar = new barreDeTache(frame, utilisateurControlleur, connexion, session);
                     frame.setJMenuBar(menuBar);
                     System.out.println("TOUR DE BOUCLE");
-
-                    //Accueil accueil = new Accueil();
-                    //frame.add(accueil);
 
                     frame.setVisible(true);
                 }

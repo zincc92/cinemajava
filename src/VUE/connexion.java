@@ -62,7 +62,7 @@ public class connexion {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(passwordField, gbc);
 
-        loginButton = new JButton("Connexion2");
+        loginButton = new JButton("Connexion");
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.gridwidth = 2;

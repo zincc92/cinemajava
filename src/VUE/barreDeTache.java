@@ -37,7 +37,7 @@ public class barreDeTache extends JMenuBar {
         monCompteMenu = new JButton("Mon Compte");
         deconnexion = new JButton("Deconnexion");
         adminMenu = new JButton("Admin");
-
+        showAccueil(session);
         updateButtons(session);
         System.out.println("UPDATE TOUR DE BOUCLE");
 
@@ -83,16 +83,6 @@ public class barreDeTache extends JMenuBar {
                 showInscription(utilisateurControlleur, barreDeTache.this);
             }
         });
-
-        /*monCompteMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Menu Mon Compte sélectionné");
-                // Affichage de l'accueil
-                System.out.println(session.getUser());
-                showMonCompte(connexion, session);
-            }
-        });*/
     }
 
     public void showAccueil(MODELE.connexion session) {

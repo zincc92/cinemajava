@@ -14,9 +14,11 @@ import javax.swing.*;
 
 public class utilisateurControlleur {
     private static Connection connexion; // Modifier le type de connexion
+    private connexion session;
 
-    public utilisateurControlleur(Connection connexion) {
+    public utilisateurControlleur(Connection connexion, connexion session) {
         this.connexion = connexion;
+        this.session = session;
     }
 
     public void setConnexion(Connection connexion) {
@@ -94,13 +96,15 @@ public class utilisateurControlleur {
         return clientId;
     }
 
-    public static void insertReservation(connexion session, int idFilm, double prix, int quantite,String emailClient, Date dateReservation, Time horaireReservation, String salle) {
+    public static int insertReservation(connexion session, int idFilm, double prix, int quantite, String emailClient, Date dateReservation, Time horaireReservation, String salle) {
         int idClient = utilisateurControlleur.getClientIdByEmail(emailClient);
+        int idReservation = -1; // Initialiser l'ID de la réservation à -1
+
         if (idClient != -1) {
-            String query = "INSERT INTO reservations (id_film, id_client, prix, quantite,date_reservation, horaire_reservation, idSalle) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            // Récupérer la session actuelle
+            String query = "INSERT INTO reservations (id_film, id_client, prix, quantite, date_reservation, horaire_reservation, idSalle) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
             try {
-                PreparedStatement statement = connexion.prepareStatement(query);
+                PreparedStatement statement = connexion.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
                 statement.setInt(1, idFilm);
                 statement.setInt(2, idClient);
                 statement.setDouble(3, prix);
@@ -109,12 +113,20 @@ public class utilisateurControlleur {
                 statement.setTime(6, horaireReservation);
                 statement.setString(7, salle);
                 statement.executeUpdate();
+
+                // Récupérer l'ID de la réservation généré
+                ResultSet generatedKeys = statement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    idReservation = generatedKeys.getInt(1);
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         } else {
             System.out.println("Client non trouvé avec l'email spécifié.");
         }
+
+        return idReservation; // Retourner l'ID de la réservation
     }
 
     public static List<JPanel> afficherReservations(Connection connexion, connexion session, barreDeTache barreDeTache) {
@@ -136,21 +148,24 @@ public class utilisateurControlleur {
                     // Si l'utilisateur existe
                     if (idUtilisateur != -1) {
                         // Récupérer les réservations de films de l'utilisateur à partir de son ID
-                        String query = "SELECT * FROM reservations WHERE id_client = ?";
+                        String query = "SELECT reservations.id, films.nom AS titre_film, reservations.quantite, reservations.prix, " +
+                                "reservations.date_reservation, reservations.horaire_reservation, reservations.idSalle " +
+                                "FROM reservations JOIN films ON reservations.id_film = films.id " +
+                                "WHERE id_client = ?";
                         try (PreparedStatement preparedStatement = connexion.prepareStatement(query)) {
                             preparedStatement.setInt(1, idUtilisateur);
                             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                                 // Parcourir les résultats et afficher chaque réservation de film sur le panneau
                                 while (resultSet.next()) {
                                     int idReservation = resultSet.getInt("id"); // Pour identifier la réservation
-                                    int idFilm = resultSet.getInt("id_film");
+                                    String titreFilm = resultSet.getString("titre_film");
                                     int quantite = resultSet.getInt("quantite");
                                     BigDecimal prix = resultSet.getBigDecimal("prix");
                                     Date dateReservation = resultSet.getDate("date_reservation");
                                     Time horaireReservation = resultSet.getTime("horaire_reservation");
                                     int idSalle = resultSet.getInt("idSalle");
                                     // Créer une chaîne de texte avec les informations sur la réservation
-                                    String infoReservation = "ID du film: " + idFilm + " | Quantité: " + quantite +
+                                    String infoReservation = "Titre du film: " + titreFilm + " | Quantité: " + quantite +
                                             " | Prix: " + prix + " | Date de réservation: " + dateReservation +
                                             " | Horaire de réservation: " + horaireReservation + " | ID de la salle: " + idSalle;
 
@@ -199,5 +214,72 @@ public class utilisateurControlleur {
         }
         return panels;
     }
+
+
+
+    public static void afficherInformationsUtilisateur(Connection connexion, connexion session, JPanel infoPanel) {
+        // Supprimer les informations utilisateur précédemment affichées
+
+        System.out.println("Dedans2" + session.getUser());
+        try {
+            // Récupérer l'ID de l'utilisateur à partir de l'email
+            String email = session.getUser().getEmail();
+            String queryId = "SELECT id FROM clients WHERE email = ?";
+            PreparedStatement preparedStatementId = connexion.prepareStatement(queryId);
+            preparedStatementId.setString(1, email);
+            ResultSet resultSetId = preparedStatementId.executeQuery();
+
+            int idUtilisateur = -1; // Initialiser à une valeur impossible
+
+            // Vérifier si un résultat est retourné
+            if (resultSetId.next()) {
+                idUtilisateur = resultSetId.getInt("id");
+            }
+
+            // Fermer les ressources
+            resultSetId.close();
+            preparedStatementId.close();
+
+            if (idUtilisateur != -1) {
+                // Récupérer les autres informations de l'utilisateur à partir de son ID
+                String queryInfo = "SELECT * FROM clients WHERE id = ?";
+                PreparedStatement preparedStatementInfo = connexion.prepareStatement(queryInfo);
+                preparedStatementInfo.setInt(1, idUtilisateur);
+                ResultSet resultSetInfo = preparedStatementInfo.executeQuery();
+
+                // Afficher les informations utilisateur sur le panneau
+                if (resultSetInfo.next()) {
+                    String nomUtilisateur = resultSetInfo.getString("nom");
+                    String emailUtilisateur = resultSetInfo.getString("email");
+                    // Ajouter d'autres informations utilisateur si nécessaire
+
+                    // Afficher les informations utilisateur sur des labels
+                    JLabel nomLabel = new JLabel("Nom: " + nomUtilisateur);
+                    JLabel emailLabel = new JLabel("Email: " + emailUtilisateur);
+                    // Ajouter d'autres labels pour les autres informations utilisateur si nécessaire
+
+                    // Ajouter les labels au panel d'informations utilisateur
+                    infoPanel.add(nomLabel);
+                    infoPanel.add(emailLabel);
+                    // Ajouter d'autres labels au panel d'informations utilisateur si nécessaire
+                }
+
+                // Fermer les ressources
+                resultSetInfo.close();
+                preparedStatementInfo.close();
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        // Rafraîchir l'affichage du panel d'informations utilisateur
+        infoPanel.revalidate();
+        infoPanel.repaint();
+    }
+
+    // Méthode pour charger et afficher les réservations de films depuis la base de données
+
+
+    // Rafraîchir l'affichage du panel de réservations de films
 
 }
