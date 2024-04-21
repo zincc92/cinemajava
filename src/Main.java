@@ -33,6 +33,7 @@ public class Main {
                 new inscription();
                 new accueil();
                 new paiement();
+                new admin();
             }
         });
     }
